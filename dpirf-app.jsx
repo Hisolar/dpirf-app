@@ -381,6 +381,48 @@ const OPTS = [
   {value:"not_applicable",label:"Not applicable",cls:"opt-na"},
 ];
 
+const ICONS = {
+  instructions: "fi-rr-book-open-reader",
+  dashboard: "fi-rr-dashboard",
+  complianceReport: "fi-rr-file-chart-pie",
+  phases: "fi-rr-gears",
+  tools: "fi-rr-tools",
+  lock: "fi-rr-lock",
+  docChecklist: "fi-rr-clipboard-list-check",
+  retention: "fi-rr-calendar-clock",
+  dataRegister: "fi-rr-database",
+  dpia: "fi-rr-scale",
+  irp: "fi-rr-triangle-warning",
+  keyContacts: "fi-rr-phone-call",
+  actionTracker: "fi-rr-list-check",
+  breachRegister: "fi-rr-file-exclamation",
+  scenarioSimulator: "fi-rr-bullseye",
+  phase1: "fi-rr-clipboard-user",
+  phase2: "fi-rr-leader",
+  phase3: "fi-rr-search",
+  phase4: "fi-rr-file",
+  phase5: "fi-rr-bolt",
+  phase6: "fi-rr-triangle-warning",
+  phase7: "fi-rr-calendar",
+  phase8: "fi-rr-check-circle",
+  save: "fi-rr-disk",
+  help: "fi-rr-question",
+  edit: "fi-rr-pencil",
+  people: "fi-rr-users",
+  print: "fi-rr-print",
+  book: "fi-rr-book-open-reader",
+  warning: "fi-rr-triangle-warning",
+  statusNotStarted: "fi-rr-circle",
+  statusCompliant: "fi-rr-badge-check",
+  statusPartial: "fi-rr-circle-half",
+  statusNonCompliant: "fi-rr-triangle-warning",
+};
+
+function Icon({name, size=16, style, className=""}) {
+  const iconClass = ICONS[name] || ICONS.help;
+  return <span aria-hidden="true" className={`${iconClass} app-icon ${className}`.trim()} style={{fontSize:size, ...style}} />;
+}
+
 function phaseScore(phase, answers) {
   const answered = phase.questions.filter(q=>answers[q.id]?.value||answers[q.id]).length;
   const applicable = phase.questions.filter(q=>{const v=answers[q.id]?.value||answers[q.id]; return v&&v!=="not_applicable";});
@@ -418,10 +460,10 @@ function isToolView(view) {
 }
 
 function tier(pct, answered) {
-  if(answered===0) return {label:"Not started",icon:"—",fg:"#6b7280",bg:"#f9fafb",border:"#e5e7eb"};
-  if(pct>=80) return {label:"Compliant",icon:"✓",fg:"#15803d",bg:"#f0fdf4",border:"#86efac"};
-  if(pct>=40) return {label:"Partially Compliant",icon:"◑",fg:"#b45309",bg:"#fffbeb",border:"#fde68a"};
-  return {label:"Non-Compliant",icon:"⚠",fg:"#b91c1c",bg:"#fef2f2",border:"#fca5a5"};
+  if(answered===0) return {label:"Not started",icon:"statusNotStarted",fg:"#6b7280",bg:"#f9fafb",border:"#e5e7eb"};
+  if(pct>=80) return {label:"Compliant",icon:"statusCompliant",fg:"#15803d",bg:"#f0fdf4",border:"#86efac"};
+  if(pct>=40) return {label:"Partially Compliant",icon:"statusPartial",fg:"#b45309",bg:"#fffbeb",border:"#fde68a"};
+  return {label:"Non-Compliant",icon:"statusNonCompliant",fg:"#b91c1c",bg:"#fef2f2",border:"#fca5a5"};
 }
 
 function arcColor(pct) {
@@ -479,6 +521,8 @@ const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body,#root{height:100%}
+.app-icon{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle}
+.app-icon::before{line-height:1}
 :root{
   --bg:#f5f4f0;--card:#fff;--b:#e0ddd8;--b2:#ece9e4;
   --t1:#1a1a1a;--t2:#55524e;--t3:#8a8680;--sw:264px;
@@ -692,6 +736,7 @@ html,body,#root{height:100%}
 .step-timeframe{font-size:10.5px;color:var(--t3);margin-bottom:8px;font-family:var(--mono)}
 .step-ta{width:100%;min-height:80px;font-family:var(--sans);font-size:12px;color:var(--t1);background:var(--bg);border:1px solid var(--b2);border-radius:6px;padding:9px 11px;outline:none;resize:vertical;transition:border-color .15s;line-height:1.5}
 .step-ta:focus{border-color:var(--t1);background:var(--card)}
+.step-sel{min-width:110px}
 
 /* KEY CONTACTS */
 .kc-grid{display:grid;grid-template-columns:1fr;gap:8px}
@@ -723,6 +768,8 @@ html,body,#root{height:100%}
 /* SCENARIO SIMULATOR */
 .scenario-card{background:var(--card);border:1px solid var(--b);border-radius:10px;padding:16px;margin-bottom:10px;cursor:pointer;transition:border-color .15s,transform .12s}
 .scenario-card:hover{border-color:var(--t1);transform:translateY(-1px)}
+.sim-start-btn{font-family:var(--mono);font-size:10px;color:#fff;background:var(--t1);border:none;border-radius:6px;padding:8px 16px;cursor:pointer;flex-shrink:0;margin-top:4px}
+.sim-actions{display:flex;gap:10px;flex-wrap:wrap}
 .scenario-sev-critical{color:#991b1b;background:#fef2f2;border-color:#fca5a5}
 .scenario-sev-high{color:#9a3412;background:#fff7ed;border-color:#fed7aa}
 .scenario-sev-medium{color:#b45309;background:#fffbeb;border-color:#fde68a}
@@ -748,7 +795,16 @@ html,body,#root{height:100%}
 
 /* RESPONSIVE TABLES — card mode on mobile */
 .tbl-responsive{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.desk-only{display:block}
+.mob-only{display:none}
 .mob-card-list{display:none}
+.mob-tool-card{background:var(--card);border:1px solid var(--b);border-radius:9px;padding:12px 12px;margin-bottom:8px}
+.mob-tool-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.mob-tool-title{font-size:12.5px;font-weight:600;color:var(--t1);line-height:1.4}
+.mob-tool-meta{font-family:var(--mono);font-size:8.5px;color:var(--t3);margin-top:3px}
+.mob-tool-row{margin-bottom:8px}
+.mob-tool-row:last-child{margin-bottom:0}
+.mob-tool-label{font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:4px}
 
 /* PRINT */
 @media print{
@@ -799,6 +855,9 @@ html,body,#root{height:100%}
   .kc-role{min-width:unset}
   .kc-note{min-width:unset}
   .evidence-row{grid-template-columns:1fr}
+  .desk-only{display:none!important}
+  .mob-only{display:block!important}
+  .mob-card-list{display:block}
   .tbl-responsive{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:10px}
   .tool-table{min-width:600px}
   .kt-row{grid-template-columns:1fr!important}
@@ -808,7 +867,14 @@ html,body,#root{height:100%}
   .breach-form-grid{grid-template-columns:1fr!important}
   .signoff-grid{grid-template-columns:1fr!important}
   .step-card{padding:12px 14px}
+  .step-header{flex-wrap:wrap;gap:8px}
+  .step-sel{width:100%;order:3;margin-top:2px}
+  .step-guidance{font-size:11px;padding:7px 10px}
+  .step-ta{font-size:12px;min-height:90px}
   .scenario-card{padding:13px}
+  .sim-start-btn{width:100%;margin-top:10px;padding:10px 16px;text-align:center}
+  .sim-actions{flex-direction:column}
+  .sim-actions>button{width:100%;justify-content:center}
 }
 
 /* ─── SMALL MOBILE  ≤480px ─── */
@@ -944,7 +1010,7 @@ export default function App() {
             </div>
             {overall.answered>0 && (
               <div style={{marginTop:10,display:"flex",alignItems:"center",gap:8,padding:"7px 10px",background:t.bg,border:`1px solid ${t.border}`,borderRadius:7}}>
-                <div style={{fontFamily:"var(--mono)",fontSize:11,fontWeight:700,color:t.fg}}>{t.icon} {overall.pct}%</div>
+                <div style={{fontFamily:"var(--mono)",fontSize:11,fontWeight:700,color:t.fg,display:"flex",alignItems:"center",gap:6}}><Icon name={t.icon} size={11} style={{color:t.fg}} /> {overall.pct}%</div>
                 <div style={{fontFamily:"var(--mono)",fontSize:8.5,color:t.fg+"99",flex:1,textTransform:"uppercase",letterSpacing:".05em"}}>{t.label}</div>
               </div>
             )}
@@ -953,14 +1019,14 @@ export default function App() {
           <nav className="sb-nav">
             {/* ── Top-level flat links ── */}
             {[
-              ["instructions","📋","How to Use"],
-              ["dashboard","📊","Dashboard"],
-              ["compliance-report","📄","Compliance Report"],
+              ["instructions","instructions","How to Use"],
+              ["dashboard","dashboard","Dashboard"],
+              ["compliance-report","complianceReport","Compliance Report"],
             ].map(([v,icon,label])=>{
               const isLocked = v === "compliance-report" && !toolsUnlocked;
               return (
               <button key={v} className={`ni ${view===v?"on":""}`} onClick={()=>nav(v)} title={isLocked ? "Complete all 8 phases to unlock tools" : label} style={{opacity:isLocked ? 0.55 : 1,cursor:isLocked ? "not-allowed" : "pointer"}}>
-                <span className="ni-num">{icon}</span>
+                <span className="ni-num"><Icon name={icon} size={14} /></span>
                 <span className="ni-name">{label}</span>
               </button>
             )})}
@@ -1092,8 +1158,8 @@ function AccordionPhases({phases, answers, currentView, onNav}) {
     return "pip-locked"; // not started but unlocked — show neutral
   };
   const getPipLabel = (p) => {
-    if (p.isComplete) return "✓";
-    if (p.isLocked) return "🔒";
+    if (p.isComplete) return <Icon name="statusCompliant" size={9} />;
+    if (p.isLocked) return <Icon name="lock" size={9} />;
     if (p.hasProgress) return `${p.sc.pct}`;
     return `${String(p.id).padStart(2,"0")}`;
   };
@@ -1102,7 +1168,7 @@ function AccordionPhases({phases, answers, currentView, onNav}) {
     <div style={{borderTop:"1px solid var(--b2)"}}>
       {/* Trigger */}
       <button className="acc-trigger" onClick={()=>setOpen(o=>!o)}>
-        <div className="acc-icon" style={{background:"#f0fdf4",color:"#15803d"}}>⚙</div>
+        <div className="acc-icon" style={{background:"#f0fdf4",color:"#15803d"}}><Icon name="phases" size={13} style={{color:"#15803d"}} /></div>
         <span className="acc-label">Phases</span>
         <span className="acc-badge">{completedCount}/{phases.length}</span>
         <span className={`acc-chevron ${open?"open":""}`}>▼</span>
@@ -1128,7 +1194,7 @@ function AccordionPhases({phases, answers, currentView, onNav}) {
                 <span className="phase-item-name">{p.name}</span>
                 {/* Right: % or lock */}
                 {p.isLocked ? (
-                  <span className="lock-icon">🔒</span>
+                  <span className="lock-icon"><Icon name="lock" size={9} /></span>
                 ) : p.hasProgress && !p.isComplete ? (
                   <span className="phase-item-pct">{p.sc.pct}%</span>
                 ) : null}
@@ -1145,15 +1211,15 @@ function AccordionPhases({phases, answers, currentView, onNav}) {
    ACCORDION TOOLS
 ═══════════════════════════════════════════════════════════════ */
 const TOOLS_LIST = [
-  {v:"doc-checklist",  label:"Doc Checklist",       icon:"📋"},
-  {v:"retention",      label:"Retention Schedule",   icon:"🗓"},
-  {v:"data-register",  label:"Data Register",        icon:"🗄"},
-  {v:"dpia",           label:"DPIA Template",        icon:"⚖️"},
-  {v:"irp",            label:"Incident Response Plan",icon:"🧯"},
-  {v:"key-contacts",   label:"Key Contacts",         icon:"📞"},
-  {v:"action-tracker", label:"Action Tracker",       icon:"✔️"},
-  {v:"breach-register",label:"Breach Register",      icon:"📗"},
-  {v:"scenario-sim",   label:"Scenario Simulator",   icon:"🎯"},
+  {v:"doc-checklist",  label:"Doc Checklist",       icon:"docChecklist"},
+  {v:"retention",      label:"Retention Schedule",   icon:"retention"},
+  {v:"data-register",  label:"Data Register",        icon:"dataRegister"},
+  {v:"dpia",           label:"DPIA Template",        icon:"dpia"},
+  {v:"irp",            label:"Incident Response Plan",icon:"irp"},
+  {v:"key-contacts",   label:"Key Contacts",         icon:"keyContacts"},
+  {v:"action-tracker", label:"Action Tracker",       icon:"actionTracker"},
+  {v:"breach-register",label:"Breach Register",      icon:"breachRegister"},
+  {v:"scenario-sim",   label:"Scenario Simulator",   icon:"scenarioSimulator"},
 ];
 
 function AccordionTools({currentView, onNav, answers}) {
@@ -1164,7 +1230,7 @@ function AccordionTools({currentView, onNav, answers}) {
     <div style={{borderTop:"1px solid var(--b2)"}}>
       {/* Trigger */}
       <button className="acc-trigger" onClick={()=>setOpen(o=>!o)}>
-        <div className="acc-icon" style={{background:"#eff6ff",color:"#1d4ed8"}}>🛠</div>
+        <div className="acc-icon" style={{background:"#eff6ff",color:"#1d4ed8"}}><Icon name="tools" size={13} style={{color:"#1d4ed8"}} /></div>
         <span className="acc-label">Tools</span>
         <span className="acc-badge">{TOOLS_LIST.length}</span>
         <span className={`acc-chevron ${open?"open":""}`}>▼</span>
@@ -1180,7 +1246,7 @@ function AccordionTools({currentView, onNav, answers}) {
             title={toolsUnlocked ? t.label : "Complete all 8 phases to unlock tools"}
             style={{opacity:toolsUnlocked ? 1 : 0.55,cursor:toolsUnlocked ? "pointer" : "not-allowed"}}
           >
-            <span style={{fontSize:12,flexShrink:0}}>{toolsUnlocked ? t.icon : "🔒"}</span>
+            <span style={{fontSize:12,flexShrink:0}}>{toolsUnlocked ? <Icon name={t.icon} size={12} /> : <Icon name="lock" size={12} />}</span>
             <span className="tool-name">{t.label}</span>
           </button>
         ))}
@@ -1215,7 +1281,7 @@ function Dashboard({answers, onPhase, charityName, st, upd}) {
       {/* Conditional workflow alert: Special Category */}
       {hasSpecialCat && (
         <div className="workflow-alert wf-critical">
-          <span style={{fontSize:16,flexShrink:0}}>⚠</span>
+          <Icon name="warning" size={16} style={{color:"#b91c1c",flexShrink:0}} />
           <div>
             <div style={{fontFamily:"var(--mono)",fontSize:9,textTransform:"uppercase",letterSpacing:".08em",color:"#b91c1c",marginBottom:3}}>
               Special Category Data — Additional Requirements Active
@@ -1250,7 +1316,7 @@ function Dashboard({answers, onPhase, charityName, st, upd}) {
           <div style={{flex:1}}>
             <div style={{fontFamily:"var(--mono)",fontSize:9,textTransform:"uppercase",letterSpacing:".09em",color:t.fg+"99",marginBottom:5}}>Overall Compliance Assessment</div>
             <div style={{display:"inline-flex",alignItems:"center",gap:7,background:t.fg+"15",border:`1px solid ${t.border}`,borderRadius:6,padding:"5px 14px"}}>
-              <span style={{fontSize:15}}>{t.icon}</span>
+              <Icon name={t.icon} size={14} style={{color:t.fg}} />
               <span style={{fontFamily:"var(--mono)",fontSize:12,fontWeight:700,color:t.fg,letterSpacing:".04em",textTransform:"uppercase"}}>{t.label}</span>
               {hasAnswers&&<span style={{fontFamily:"var(--mono)",fontSize:11,color:t.fg+"99"}}>— {overall.pct}%</span>}
             </div>
@@ -1293,7 +1359,7 @@ function Dashboard({answers, onPhase, charityName, st, upd}) {
           borderRadius:9, padding:"14px 18px", marginBottom:10, flexWrap:"wrap",
         }}>
           <div style={{display:"flex",alignItems:"center",gap:12,flex:1,minWidth:0}}>
-            <span style={{fontSize:20,flexShrink:0}}>📄</span>
+            <Icon name="complianceReport" size={20} style={{color:"var(--t1)",flexShrink:0}} />
             <div>
               <div style={{fontSize:13,fontWeight:600,color:"var(--t1)",marginBottom:2}}>
                 Ready to share your compliance position?
@@ -1382,7 +1448,7 @@ function Dashboard({answers, onPhase, charityName, st, upd}) {
         </div>
         <div style={{display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
           <input type="date" className="f-in" style={{width:160,fontFamily:"var(--mono)",fontSize:12}} value={annualReviewDate} onChange={e=>upd("annualReviewDate",e.target.value)}/>
-          <div style={{fontFamily:"var(--mono)",fontSize:9,color:annualReviewDate?"#15803d":"#9ca3af"}}>{annualReviewDate?"✓ Scheduled":"— Not set"}</div>
+          <div style={{fontFamily:"var(--mono)",fontSize:9,color:annualReviewDate?"#15803d":"#9ca3af",display:"flex",alignItems:"center",gap:5}}>{annualReviewDate ? <><Icon name="statusCompliant" size={10} style={{color:"#15803d"}} /> Scheduled</> : <><Icon name="statusNotStarted" size={10} style={{color:"#9ca3af"}} /> Not set</>}</div>
         </div>
       </div>
     </>
@@ -1478,7 +1544,7 @@ function ComplianceReport({st, onNav}) {
           <div className="page-sub">Plain-English summary of your legal position — for trustees, management or auditors</div>
         </div>
         <button onClick={()=>window.print()} style={{fontFamily:"var(--mono)",fontSize:11,color:"#fff",background:"var(--t1)",border:"none",borderRadius:6,padding:"9px 18px",cursor:"pointer",flexShrink:0}}>
-          🖨 Print / Save as PDF
+          <span style={{display:"inline-flex",alignItems:"center",gap:8}}><Icon name="print" size={12} style={{color:"#fff"}} /> Print / Save as PDF</span>
         </button>
       </div>
 
@@ -1509,7 +1575,7 @@ function ComplianceReport({st, onNav}) {
               </div>
             </div>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{fontFamily:"var(--mono)",fontSize:15,fontWeight:700,color:t.fg,marginBottom:4}}>{t.icon} {t.label} — {overall.pct}%</div>
+                <div style={{fontFamily:"var(--mono)",fontSize:15,fontWeight:700,color:t.fg,marginBottom:4,display:"flex",alignItems:"center",gap:8}}><Icon name={t.icon} size={15} style={{color:t.fg}} /> {t.label} — {overall.pct}%</div>
               <div style={{fontSize:12.5,color:"var(--t1)",lineHeight:1.6,marginBottom:8}}>{assessment.meaning}</div>
               {/* Overall stacked progress bar — same as dashboard */}
               {overall.answered>0 && (()=>{
@@ -1619,7 +1685,7 @@ function ComplianceReport({st, onNav}) {
           {overall.answered===0 ? (
             <div style={{fontSize:12.5,color:"var(--t2)"}}>Complete the phase questions to generate your priority action list.</div>
           ) : gapActions.length===0 ? (
-            <div style={{background:"#f0fdf4",border:"1px solid #86efac",borderRadius:8,padding:"14px 16px",fontSize:12.5,color:"#15803d"}}>✓ No Critical or High priority gaps identified based on current answers. Continue to Phase 7 to schedule your annual review.</div>
+            <div style={{background:"#f0fdf4",border:"1px solid #86efac",borderRadius:8,padding:"14px 16px",fontSize:12.5,color:"#15803d",display:"flex",alignItems:"center",gap:8}}><Icon name="statusCompliant" size={14} style={{color:"#15803d",flexShrink:0}} /> No Critical or High priority gaps identified based on current answers. Continue to Phase 7 to schedule your annual review.</div>
           ) : (
             <>
               <div style={{fontSize:12.5,color:"var(--t2)",lineHeight:1.6,marginBottom:14}}>
@@ -1684,27 +1750,27 @@ function ComplianceReport({st, onNav}) {
 ═══════════════════════════════════════════════════════════════ */
 function Instructions({onNav, answers}) {
   const steps = [
-    {num:"1", emoji:"📝", title:"Tell us about your charity", desc:"Enter your charity name, ICO number and who is responsible for data protection.", action:"Start Phase 1", v:1, time:"5 min"},
-    {num:"2", emoji:"🏛", title:"Confirm your leadership", desc:"Make sure someone is named as your data protection lead and your policy is approved.", action:"Go to Phase 2", v:2, time:"5 min"},
-    {num:"3", emoji:"🔍", title:"Check your risks", desc:"Tell us whether you've assessed your data risks and done privacy checks before new systems.", action:"Go to Phase 3", v:3, time:"10 min"},
-    {num:"4", emoji:"📄", title:"Put documents in place", desc:"Privacy notices, supplier agreements, staff training — make sure the basics are covered.", action:"Go to Phase 4", v:4, time:"10 min"},
-    {num:"5", emoji:"⚡", title:"Protect your critical activities", desc:"What would happen if your systems went down? Make sure your most important data is backed up.", action:"Go to Phase 5", v:5, time:"10 min"},
-    {num:"6", emoji:"🚨", title:"Prepare for a breach", desc:"The most important phase. Make sure you could respond to a data breach within 72 hours.", action:"Go to Phase 6", v:6, time:"15 min"},
-    {num:"7", emoji:"📅", title:"Schedule your annual review", desc:"Set a date to review your data protection arrangements every year.", action:"Go to Phase 7", v:7, time:"5 min"},
-    {num:"8", emoji:"✅", title:"Close the loop", desc:"Make sure any gaps you've found lead to real action and get fixed.", action:"Go to Phase 8", v:8, time:"5 min"},
+    {num:"1", icon:"phase1", title:"Tell us about your charity", desc:"Enter your charity name, ICO number and who is responsible for data protection.", action:"Start Phase 1", v:1, time:"5 min"},
+    {num:"2", icon:"phase2", title:"Confirm your leadership", desc:"Make sure someone is named as your data protection lead and your policy is approved.", action:"Go to Phase 2", v:2, time:"5 min"},
+    {num:"3", icon:"phase3", title:"Check your risks", desc:"Tell us whether you've assessed your data risks and done privacy checks before new systems.", action:"Go to Phase 3", v:3, time:"10 min"},
+    {num:"4", icon:"phase4", title:"Put documents in place", desc:"Privacy notices, supplier agreements, staff training — make sure the basics are covered.", action:"Go to Phase 4", v:4, time:"10 min"},
+    {num:"5", icon:"phase5", title:"Protect your critical activities", desc:"What would happen if your systems went down? Make sure your most important data is backed up.", action:"Go to Phase 5", v:5, time:"10 min"},
+    {num:"6", icon:"phase6", title:"Prepare for a breach", desc:"The most important phase. Make sure you could respond to a data breach within 72 hours.", action:"Go to Phase 6", v:6, time:"15 min"},
+    {num:"7", icon:"phase7", title:"Schedule your annual review", desc:"Set a date to review your data protection arrangements every year.", action:"Go to Phase 7", v:7, time:"5 min"},
+    {num:"8", icon:"phase8", title:"Close the loop", desc:"Make sure any gaps you've found lead to real action and get fixed.", action:"Go to Phase 8", v:8, time:"5 min"},
   ];
 
   const tools = [
-    {emoji:"📋", title:"Documentation Checklist", desc:"Track the 15 documents UK law requires you to have.", v:"doc-checklist"},
-    {emoji:"🗓", title:"Retention Schedule", desc:"How long should you keep different types of data? All pre-filled.", v:"retention"},
-    {emoji:"🗄", title:"Data Register", desc:"A record of every type of personal data your charity holds.", v:"data-register"},
-    {emoji:"⚖️", title:"DPIA Template", desc:"The privacy risk assessment form required for high-risk activities.", v:"dpia"},
-    {emoji:"🧯", title:"Incident Response Plan", desc:"Print this and put it on the wall. Your step-by-step guide if something goes wrong.", v:"irp"},
-    {emoji:"📞", title:"Key Contacts", desc:"Print this and display it. Who to call in an emergency.", v:"key-contacts"},
-    {emoji:"✔️", title:"Action Tracker", desc:"Your live to-do list. See exactly what still needs doing.", v:"action-tracker"},
-    {emoji:"📗", title:"Breach Register", desc:"Required by law — log every data incident, even small ones.", v:"breach-register"},
-    {emoji:"🎯", title:"Scenario Simulator", desc:"Practice your breach response with your team. Takes 30 minutes.", v:"scenario-sim"},
-    {emoji:"📊", title:"Compliance Report", desc:"A printable summary to share with trustees or management.", v:"compliance-report"},
+    {icon:"docChecklist", title:"Documentation Checklist", desc:"Track the 15 documents UK law requires you to have.", v:"doc-checklist"},
+    {icon:"retention", title:"Retention Schedule", desc:"How long should you keep different types of data? All pre-filled.", v:"retention"},
+    {icon:"dataRegister", title:"Data Register", desc:"A record of every type of personal data your charity holds.", v:"data-register"},
+    {icon:"dpia", title:"DPIA Template", desc:"The privacy risk assessment form required for high-risk activities.", v:"dpia"},
+    {icon:"irp", title:"Incident Response Plan", desc:"Print this and put it on the wall. Your step-by-step guide if something goes wrong.", v:"irp"},
+    {icon:"keyContacts", title:"Key Contacts", desc:"Print this and display it. Who to call in an emergency.", v:"key-contacts"},
+    {icon:"actionTracker", title:"Action Tracker", desc:"Your live to-do list. See exactly what still needs doing.", v:"action-tracker"},
+    {icon:"breachRegister", title:"Breach Register", desc:"Required by law — log every data incident, even small ones.", v:"breach-register"},
+    {icon:"scenarioSimulator", title:"Scenario Simulator", desc:"Practice your breach response with your team. Takes 30 minutes.", v:"scenario-sim"},
+    {icon:"complianceReport", title:"Compliance Report", desc:"A printable summary to share with trustees or management.", v:"compliance-report"},
   ];
 
   const toolsUnlocked = allPhaseQuestionsAnswered(answers);
@@ -1752,7 +1818,7 @@ function Instructions({onNav, answers}) {
               onMouseEnter={isLocked ? undefined : e=>{e.currentTarget.style.borderColor="var(--t1)";e.currentTarget.style.transform="translateY(-1px)"}}
               onMouseLeave={isLocked ? undefined : e=>{e.currentTarget.style.borderColor="var(--b)";e.currentTarget.style.transform=""}}>
               <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:7}}>
-                <div style={{fontSize:20,lineHeight:1}}>{isLocked ? "🔒" : s.emoji}</div>
+                <div style={{fontSize:20,lineHeight:1}}>{isLocked ? <Icon name="lock" size={20} /> : <Icon name={s.icon} size={20} />}</div>
                 <div>
                   <div style={{fontFamily:"var(--mono)",fontSize:8.5,color:"var(--t3)",marginBottom:1}}>Phase {s.num} · ~{s.time}</div>
                   <div style={{fontSize:12.5,fontWeight:700,color:"var(--t1)"}}>{s.title}</div>
@@ -1775,7 +1841,7 @@ function Instructions({onNav, answers}) {
             onMouseEnter={toolsUnlocked ? e=>e.currentTarget.style.borderColor="var(--t1)" : undefined}
             onMouseLeave={toolsUnlocked ? e=>e.currentTarget.style.borderColor="var(--b)" : undefined}
             title={toolsUnlocked ? t.title : "Complete all 8 phases to unlock tools"}>
-            <div style={{fontSize:18,marginBottom:6}}>{toolsUnlocked ? t.emoji : "🔒"}</div>
+            <div style={{fontSize:18,marginBottom:6}}>{toolsUnlocked ? <Icon name={t.icon} size={18} /> : <Icon name="lock" size={18} />}</div>
             <div style={{fontSize:12,fontWeight:700,color:"var(--t1)",marginBottom:4}}>{t.title}</div>
             <div style={{fontSize:11,color:"var(--t3)",lineHeight:1.45}}>{t.desc}</div>
             <div style={{fontFamily:"var(--mono)",fontSize:9.5,color:"var(--t3)",marginTop:8}}>
@@ -1789,14 +1855,14 @@ function Instructions({onNav, answers}) {
       <div className="sec-label">Tips for getting started</div>
       <div style={{background:"var(--card)",border:"1px solid var(--b)",borderRadius:10,padding:"18px 20px",marginBottom:16}}>
         {[
-          {emoji:"💾", tip:"Your answers save automatically. You can close and come back at any time."},
-          {emoji:"❓", tip:"Every question has a \"What does this mean?\" button. Click it if you're unsure."},
-          {emoji:"✏️", tip:"If you're not sure, answer \"In progress\" — you can update it later."},
-          {emoji:"👥", tip:"You don't have to do this alone. Share the Compliance Report with trustees or colleagues."},
-          {emoji:"🖨", tip:"The Incident Response Plan and Key Contacts can be printed and put on the wall."},
+          {icon:"save", tip:"Your answers save automatically. You can close and come back at any time."},
+          {icon:"help", tip:"Every question has a \"What does this mean?\" button. Click it if you're unsure."},
+          {icon:"edit", tip:"If you're not sure, answer \"In progress\" — you can update it later."},
+          {icon:"people", tip:"You don't have to do this alone. Share the Compliance Report with trustees or colleagues."},
+          {icon:"print", tip:"The Incident Response Plan and Key Contacts can be printed and put on the wall."},
         ].map((t,i)=>(
           <div key={i} style={{display:"flex",gap:12,padding:"9px 0",borderBottom:i<4?"1px solid var(--b2)":"none",alignItems:"flex-start"}}>
-            <span style={{fontSize:16,flexShrink:0,marginTop:1}}>{t.emoji}</span>
+            <span style={{fontSize:16,flexShrink:0,marginTop:1}}><Icon name={t.icon} size={16} /></span>
             <span style={{fontSize:12.5,color:"var(--t2)",lineHeight:1.55}}>{t.tip}</span>
           </div>
         ))}
@@ -1826,7 +1892,7 @@ function KeyTermsToggle() {
         }}
       >
         <div style={{display:"flex",alignItems:"center",gap:10}}>
-          <span style={{fontSize:16}}>📖</span>
+          <Icon name="book" size={16} />
           <div style={{textAlign:"left"}}>
             <div style={{fontSize:13,fontWeight:600,color:"var(--t1)"}}>Key Legal Terms &amp; References</div>
             <div style={{fontSize:11,color:"var(--t3)",marginTop:1}}>
@@ -1980,7 +2046,7 @@ function OrgDetailsBlock({fields,values,onChange}) {
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}>
               <div style={{fontFamily:"var(--mono)",fontSize:9,textTransform:"uppercase",letterSpacing:".07em",color:"var(--t3)"}}>{f.label}</div>
               <div style={{fontFamily:"var(--mono)",fontSize:8.5,color:"var(--t3)",background:"var(--bg)",border:"1px solid var(--b2)",borderRadius:3,padding:"1px 5px"}}>{f.ref}</div>
-              <div style={{marginLeft:"auto",fontFamily:"var(--mono)",fontSize:9,color:filled?"#15803d":"#9ca3af",fontWeight:600}}>{filled?"✓ Complete":"—"}</div>
+              <div style={{marginLeft:"auto",fontFamily:"var(--mono)",fontSize:9,color:filled?"#15803d":"#9ca3af",fontWeight:600,display:"flex",alignItems:"center",gap:5}}>{filled ? <><Icon name="statusCompliant" size={10} style={{color:"#15803d"}} /> Complete</> : <><Icon name="statusNotStarted" size={10} style={{color:"#9ca3af"}} /></>}</div>
             </div>
             <div style={{fontSize:11,color:"var(--t3)",marginBottom:4,lineHeight:1.4}}>{f.guidance}</div>
             {f.multiline
@@ -2032,7 +2098,7 @@ function PhaseView({phase,answers,setAns,guidance,toggleG,evidenceOpen,toggleEv,
       {/* Conditional workflow alerts */}
       {showArt9Alert && (
         <div className="workflow-alert wf-high">
-          <span style={{fontSize:14,flexShrink:0}}>📋</span>
+          <Icon name="docChecklist" size={14} style={{color:"#92400e",flexShrink:0}} />
           <div style={{fontSize:12,color:"#92400e",lineHeight:1.55}}>
             <strong>Special category data selected.</strong> You must document an Art 9(2) condition for each type in your Data Register, and complete a DPIA before processing begins. These requirements activate automatically when Q3 is answered "Yes".
           </div>
@@ -2040,7 +2106,7 @@ function PhaseView({phase,answers,setAns,guidance,toggleG,evidenceOpen,toggleEv,
       )}
       {showDpiaAlert && (
         <div className="workflow-alert wf-high">
-          <span style={{fontSize:14,flexShrink:0}}>⚠</span>
+          <Icon name="warning" size={14} style={{color:"#92400e",flexShrink:0}} />
           <div style={{fontSize:12,color:"#92400e",lineHeight:1.55}}>
             <strong>DPIA required.</strong> Because you collect special category data, a Data Protection Impact Assessment is <em>mandatory</em> for all high-risk processing activities in this phase. Use the{" "}
             <span style={{cursor:"pointer",textDecoration:"underline"}} onClick={()=>onNav("dpia")}>DPIA Template tab</span>.
@@ -2089,7 +2155,7 @@ function PhaseView({phase,answers,setAns,guidance,toggleG,evidenceOpen,toggleEv,
                   </button>
                   {val && (
                     <button className={`evidence-badge ${hasEvidence?"filled":""}`} onClick={()=>toggleEv(q.id)}>
-                      {hasEvidence?"✓ Evidence recorded":"+ Add evidence / approval"}
+                        {hasEvidence ? <span style={{display:"inline-flex",alignItems:"center",gap:6}}><Icon name="statusCompliant" size={10} /> Evidence recorded</span> : "+ Add evidence / approval"}
                     </button>
                   )}
                 </div>
@@ -2098,10 +2164,10 @@ function PhaseView({phase,answers,setAns,guidance,toggleG,evidenceOpen,toggleEv,
                   <div className="qc-guide">{q.guidance}</div>
                 )}
                 {val==="no" && q.action && (
-                  <div className="action-box">⚠ Action required: {q.action}</div>
+                  <div className="action-box"><span style={{display:"inline-flex",alignItems:"center",gap:6}}><Icon name="warning" size={12} /> Action required: {q.action}</span></div>
                 )}
                 {val==="in_progress" && q.action && (
-                  <div className="action-box action-box-prog">◑ In progress: {q.action}</div>
+                  <div className="action-box action-box-prog"><span style={{display:"inline-flex",alignItems:"center",gap:6}}><Icon name="statusPartial" size={12} /> In progress: {q.action}</span></div>
                 )}
 
                 {/* Evidence / approval panel */}
@@ -2166,7 +2232,7 @@ function DocChecklist({state,onChange,onNav}) {
     <>
       <div className="page-title">Documentation Checklist</div>
       <div className="page-sub">Track the 15 documents required under UK GDPR · {complete}/15 complete</div>
-      <div className="tbl-responsive" style={{background:"var(--card)",border:"1px solid var(--b)",borderRadius:10,marginBottom:8}}>
+      <div className="tbl-responsive desk-only" style={{background:"var(--card)",border:"1px solid var(--b)",borderRadius:10,marginBottom:8}}>
         <table className="tool-table" style={{minWidth:780}}>
           <thead><tr><th>Document</th><th>Legal basis</th><th>Status</th><th>Implement by</th><th>Train by</th><th>Owner</th></tr></thead>
           <tbody>
@@ -2191,6 +2257,37 @@ function DocChecklist({state,onChange,onNav}) {
           </tbody>
         </table>
       </div>
+      <div className="mob-card-list mob-only" style={{marginBottom:8}}>
+        {DOC_CHECKLIST.map(d=>(
+          <div key={d.id} className="mob-tool-card">
+            <div className="mob-tool-head">
+              <div>
+                <div className="mob-tool-title">{d.name}</div>
+                <div className="mob-tool-meta">{d.basis} · {d.iso}</div>
+              </div>
+            </div>
+            <div style={{fontSize:11,color:"var(--t3)",lineHeight:1.45,marginBottom:9}}>{d.guidance}</div>
+            <div className="mob-tool-row">
+              <div className="mob-tool-label">Status</div>
+              <select className="tbl-sel" value={state[d.id]?.status||"Not started"} onChange={e=>update(d.id,"status",e.target.value)}>
+                {["Not started","In progress","Complete","Not applicable"].map(s=><option key={s}>{s}</option>)}
+              </select>
+            </div>
+            <div className="mob-tool-row">
+              <div className="mob-tool-label">Implement by</div>
+              <input className="tbl-in" type="date" value={state[d.id]?.dateImpl||""} onChange={e=>update(d.id,"dateImpl",e.target.value)}/>
+            </div>
+            <div className="mob-tool-row">
+              <div className="mob-tool-label">Train by</div>
+              <input className="tbl-in" type="date" value={state[d.id]?.dateTrain||""} onChange={e=>update(d.id,"dateTrain",e.target.value)}/>
+            </div>
+            <div className="mob-tool-row">
+              <div className="mob-tool-label">Owner</div>
+              <input className="tbl-in" placeholder="Name…" value={state[d.id]?.owner||""} onChange={e=>update(d.id,"owner",e.target.value)}/>
+            </div>
+          </div>
+        ))}
+      </div>
       <ToolNav current="doc-checklist" onNav={onNav}/>
     </>
   );
@@ -2212,7 +2309,7 @@ function RetentionSchedule({state,onChange,onNav}) {
       {groups.map(g=>(
         <div key={g.label} style={{marginBottom:16}}>
           <div className="sec-label">{g.label}</div>
-          <div className="tbl-responsive" style={{background:"var(--card)",border:"1px solid var(--b)",borderRadius:10}}>
+          <div className="tbl-responsive desk-only" style={{background:"var(--card)",border:"1px solid var(--b)",borderRadius:10}}>
             <table className="tool-table" style={{minWidth:680}}>
               <thead><tr><th>Ref</th><th>Data type</th><th>Statutory period</th><th>Legal basis</th><th>Your adjusted period</th></tr></thead>
               <tbody>
@@ -2227,6 +2324,30 @@ function RetentionSchedule({state,onChange,onNav}) {
                 ))}
               </tbody>
             </table>
+          </div>
+          <div className="mob-card-list mob-only">
+            {g.items.map(r=>(
+              <div key={r.id} className="mob-tool-card">
+                <div className="mob-tool-head">
+                  <div>
+                    <div className="mob-tool-title">{r.name}</div>
+                    <div className="mob-tool-meta">{r.ref}</div>
+                  </div>
+                </div>
+                <div className="mob-tool-row">
+                  <div className="mob-tool-label">Statutory period</div>
+                  <div style={{fontSize:12,color:"var(--t2)"}}>{r.stat}</div>
+                </div>
+                <div className="mob-tool-row">
+                  <div className="mob-tool-label">Legal basis</div>
+                  <div style={{fontSize:11,color:"var(--t3)",lineHeight:1.45}}>{r.note}</div>
+                </div>
+                <div className="mob-tool-row">
+                  <div className="mob-tool-label">Your adjusted period</div>
+                  <input className="tbl-in" placeholder="e.g. 3 years" value={state[r.id]||""} onChange={e=>update(r.id,e.target.value)}/>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       ))}
@@ -2338,7 +2459,7 @@ function DpiaTemplate({state,activity,onChange,onActivity,charityName,onNav}) {
                 <div className="step-title">{s.title}</div>
                 <div className="step-guidance">{s.guidance}</div>
               </div>
-              <select className="tbl-sel" value={st2.status} onChange={e=>update(s.step,"status",e.target.value)} style={{flexShrink:0}}>
+              <select className="tbl-sel step-sel" value={st2.status} onChange={e=>update(s.step,"status",e.target.value)} style={{flexShrink:0}}>
                 {["Not started","In progress","Complete"].map(v=><option key={v}>{v}</option>)}
               </select>
             </div>
@@ -2410,7 +2531,7 @@ function KeyContactsView({state,onChange,charityName,icoNumber,dpName,onNav}) {
         </div>
         <button onClick={()=>window.print()} className="no-print"
           style={{fontFamily:"var(--mono)",fontSize:11,color:"#fff",background:"var(--t1)",border:"none",borderRadius:6,padding:"8px 16px",cursor:"pointer",flexShrink:0}}>
-          🖨 Print
+          <span style={{display:"inline-flex",alignItems:"center",gap:8}}><Icon name="print" size={12} style={{color:"#fff"}} /> Print</span>
         </button>
       </div>
       {charityName&&<div style={{fontFamily:"var(--sans)",fontSize:15,fontWeight:600,marginBottom:14}}>{charityName}{icoNumber?` · ICO: ${icoNumber}`:""}</div>}
@@ -2430,7 +2551,7 @@ function KeyContactsView({state,onChange,charityName,icoNumber,dpName,onNav}) {
         ))}
       </div>
       <div className="sec-label">Data Processors</div>
-      <div className="tbl-responsive" style={{background:"var(--card)",border:"1px solid var(--b)",borderRadius:10,marginBottom:8}}>
+      <div className="tbl-responsive desk-only" style={{background:"var(--card)",border:"1px solid var(--b)",borderRadius:10,marginBottom:8}}>
         <table className="tool-table" style={{minWidth:600}}>
           <thead><tr><th>Processor type</th><th>Company name</th><th>Phone</th><th>Email</th><th>DPA signed?</th></tr></thead>
           <tbody>
@@ -2450,6 +2571,36 @@ function KeyContactsView({state,onChange,charityName,icoNumber,dpName,onNav}) {
             ))}
           </tbody>
         </table>
+      </div>
+      <div className="mob-card-list mob-only" style={{marginBottom:8}}>
+        {PROCESSOR_TYPES.map(p=>(
+          <div key={p.id} className="mob-tool-card">
+            <div className="mob-tool-head">
+              <div className="mob-tool-title">{p.type}</div>
+            </div>
+            <div className="mob-tool-row">
+              <div className="mob-tool-label">Company name</div>
+              <input className="tbl-in" placeholder="company name…"
+                value={state.processors?.[p.id]?.company||""} onChange={e=>updP(p.id,"company",e.target.value)}/>
+            </div>
+            <div className="mob-tool-row">
+              <div className="mob-tool-label">Phone</div>
+              <input className="tbl-in" placeholder="phone…"
+                value={state.processors?.[p.id]?.phone||""} onChange={e=>updP(p.id,"phone",e.target.value)}/>
+            </div>
+            <div className="mob-tool-row">
+              <div className="mob-tool-label">Email</div>
+              <input className="tbl-in" placeholder="email…"
+                value={state.processors?.[p.id]?.email||""} onChange={e=>updP(p.id,"email",e.target.value)}/>
+            </div>
+            <div className="mob-tool-row">
+              <div className="mob-tool-label">DPA signed?</div>
+              <select className="tbl-sel" value={state.processors?.[p.id]?.dpa||"No"} onChange={e=>updP(p.id,"dpa",e.target.value)}>
+                {["No","In progress","Yes","Not applicable"].map(v=><option key={v}>{v}</option>)}
+              </select>
+            </div>
+          </div>
+        ))}
       </div>
       <ToolNav current="key-contacts" onNav={onNav}/>
     </>
@@ -2739,9 +2890,9 @@ function ScenarioSimulator({state,onChange,onNav}) {
         </div>
       </div>
 
-      <div style={{display:"flex",gap:10}}>
-        <button onClick={finishExercise} style={{fontFamily:"var(--sans)",fontSize:12,fontWeight:600,color:"#fff",background:"var(--t1)",border:"none",borderRadius:6,padding:"10px 20px",cursor:"pointer"}}>
-          ✓ Save & Complete Exercise
+      <div className="sim-actions">
+        <button onClick={finishExercise} style={{fontFamily:"var(--sans)",fontSize:12,fontWeight:600,color:"#fff",background:"var(--t1)",border:"none",borderRadius:6,padding:"10px 20px",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:8}}>
+          <Icon name="statusCompliant" size={12} style={{color:"#fff"}} /> Save & Complete Exercise
         </button>
         <button onClick={()=>{setStep(0);setSelected(null);}} style={{fontFamily:"var(--sans)",fontSize:12,color:"var(--t2)",background:"none",border:"1px solid var(--b)",borderRadius:6,padding:"10px 16px",cursor:"pointer"}}>
           Cancel
@@ -2769,7 +2920,7 @@ function ScenarioSimulator({state,onChange,onNav}) {
                 <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,flexWrap:"wrap"}}>
                   <span style={{fontFamily:"var(--mono)",fontSize:9,fontWeight:700,color:sevColor[s.severity]||"var(--t3)",background:sevBg[s.severity]||"var(--bg)",border:`1px solid ${(sevColor[s.severity]||"var(--b)")}55`,padding:"2px 8px",borderRadius:99}}>{s.severity}</span>
                   <span style={{fontFamily:"var(--mono)",fontSize:9,color:"var(--t3)",background:"var(--bg)",border:"1px solid var(--b2)",padding:"2px 8px",borderRadius:99}}>{s.category}</span>
-                  {wasRun&&<span style={{fontFamily:"var(--mono)",fontSize:9,color:"#15803d",background:"#f0fdf4",border:"1px solid #86efac",padding:"2px 8px",borderRadius:99}}>✓ Last run: {saved.lastRun}</span>}
+                  {wasRun&&<span style={{fontFamily:"var(--mono)",fontSize:9,color:"#15803d",background:"#f0fdf4",border:"1px solid #86efac",padding:"2px 8px",borderRadius:99,display:"inline-flex",alignItems:"center",gap:5}}><Icon name="statusCompliant" size={10} style={{color:"#15803d"}} /> Last run: {saved.lastRun}</span>}
                 </div>
                 <div style={{fontSize:14,fontWeight:600,color:"var(--t1)",marginBottom:4}}>{s.title}</div>
                 <div style={{fontSize:12,color:"var(--t2)",lineHeight:1.5,marginBottom:8}}>{s.background.slice(0,140)}…</div>
@@ -2781,8 +2932,7 @@ function ScenarioSimulator({state,onChange,onNav}) {
                   </div>
                 )}
               </div>
-              <button onClick={()=>startScenario(s)}
-                style={{fontFamily:"var(--mono)",fontSize:10,color:"#fff",background:"var(--t1)",border:"none",borderRadius:6,padding:"8px 16px",cursor:"pointer",flexShrink:0,marginTop:4}}>
+              <button onClick={()=>startScenario(s)} className="sim-start-btn">
                 {wasRun?"Run Again":"Start Exercise"}
               </button>
             </div>
