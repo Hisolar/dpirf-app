@@ -6,23 +6,25 @@ import { useState, useEffect, useCallback, useRef } from "react";
 
 const PHASES = [
   { id:1, name:"Context", std:"UK GDPR Arts 4–6, 9, 12–14 · DPA 2018 Pt 2 Ch 2",
-    desc:"Establish what personal data your charity holds, why you hold it, and on what legal basis.",
+    desc:"Establish what personal data your charity / organisation holds, why you hold it, and on what legal basis.",
     questions:[
-      {id:"c1_1",text:"Do you know what personal data your charity collects?",guidance:"Personal data is any information that identifies someone — donor names, volunteer phone numbers, beneficiary health details. Mapping everything you collect is the essential first step."},
-      {id:"c1_2",text:"Do you have a written record of your legal reason for collecting each type of personal data?",guidance:"UK law requires a specific lawful basis for every type of processing — consent, contract, legal obligation, legitimate interests, vital interests or public task. Document one before collection begins."},
-      {id:"c1_3",text:"Do you collect sensitive information — for example health details, ethnic background, religious beliefs or criminal records?",guidance:"Special category data (UK GDPR Art 9) requires an additional legal condition beyond your Art 6 lawful basis. Document an Art 9(2) condition for every type you collect.",triggersWorkflow:"specialCategory"},
-      {id:"c1_4",text:"Do you have a written record of all personal data your charity holds, what you use it for and who can see it?",guidance:"This is your Record of Processing Activities (RoPA) — required by UK GDPR Art 30. Free template at ico.org.uk"},
-      {id:"c1_5",text:"Have you identified all outside companies that can access your personal data — for example your till provider or IT support?",guidance:"Any company that handles personal data on your behalf is a processor. You need a signed Data Processing Agreement (DPA) with each one. UK GDPR Art 28."},
-      {id:"c1_6",text:"Do donors and the public know what you do with their data? Do staff and volunteers have a separate written notice?",guidance:"Privacy notices must be in plain English. They must cover: what data you collect, why, how long you keep it, and people's rights. Free templates at ico.org.uk"},
+      {id:"c1_1",text:"Do you know what personal data your charity / organisation collects?",guidance:"Personal data is any information that identifies someone — donor names, volunteer phone numbers, beneficiary health details. Mapping everything you collect is the essential first step.",action:"Create a personal data inventory — list every type of information you collect, where it comes from, and what you use it for. Free guide at ico.org.uk",opts:[{value:"yes",label:"Yes",cls:"opt-yes"},{value:"no",label:"No",cls:"opt-no"},{value:"dont_know",label:"Don't Know",cls:"opt-dk"}]},
+      {id:"c1_1b",text:"Do you want to record the personal data your charity / organisation collects?",guidance:"If yes, use the Data Register (accessible from the Tools section once all phases are complete) to list every type of personal data you hold, its purpose, how long you keep it, and who can access it. If you already have a data register, record where it is stored using the evidence section. Completing this satisfies the UK GDPR Art 30 requirement.",action:"Open the Data Register and begin recording your personal data inventory. Free template at ico.org.uk"},
+      {id:"c1_1c",text:"Do you already have any existing written documents or policies that cover what personal data your charity / organisation collects?",guidance:"This might be an existing spreadsheet, data register, or any other document. If yes, use the evidence section to record where it is stored — this allows auditors and the ICO to locate the original document quickly. Consider whether it covers all required fields: what data, why you hold it, how long, and who can see it.",action:"Check whether you have any existing data inventory or policy document and record its location in the evidence section.",opts:[{value:"yes",label:"Yes",cls:"opt-yes"},{value:"no",label:"No",cls:"opt-no"},{value:"dont_know",label:"Don't Know",cls:"opt-dk"}]},
+      {id:"c1_2",text:"Do you have a written record of your legal reason for collecting each type of personal data?",guidance:"UK law requires a specific lawful basis for every type of processing — consent, contract, legal obligation, legitimate interests, vital interests or public task. Document one before collection begins.",note:"More than one lawful basis can apply to the same data type — for example, a charity / organisation may rely on both consent and vital interests depending on context. Record every applicable basis separately in your Data Register, not just one.",action:"Document a lawful basis for every type of personal data you process. Free guidance on lawful bases at ico.org.uk"},
+      {id:"c1_3",text:"Do you collect sensitive information — for example health details, ethnic background, religious beliefs or criminal records?",guidance:"Special category data (UK GDPR Art 9) requires an additional legal condition beyond your Art 6 lawful basis. Document an Art 9(2) condition for every type you collect.",triggersWorkflow:"specialCategory",action:"Check whether any data you collect falls into a special category — health, race, religion, biometrics, criminal records, etc. Free guidance at ico.org.uk"},
+      {id:"c1_4",text:"Do you have a written record of all personal data your charity / organisation holds, what you use it for and who can see it?",guidance:"This is your Record of Processing Activities (RoPA) — required by UK GDPR Art 30. Free template at ico.org.uk",action:"Create a Record of Processing Activities (RoPA) — required by UK GDPR Art 30. Free template at ico.org.uk"},
+      {id:"c1_5",text:"Have you identified all outside companies that can access your personal data — for example your till provider or IT support?",guidance:"Any company that handles personal data on your behalf is a processor. You need a signed Data Processing Agreement (DPA) with each one. UK GDPR Art 28.",action:"Map all third-party processors and put a signed Data Processing Agreement in place with each one. Free template at ico.org.uk"},
+      {id:"c1_6",text:"Do donors and the public know what you do with their data? Do staff and volunteers have a separate written notice?",guidance:"Privacy notices must be in plain English. They must cover: what data you collect, why, how long you keep it, and people's rights. Free templates at ico.org.uk",action:"Create a public privacy notice and a separate notice for staff and volunteers. Free templates at ico.org.uk"},
     ]},
   { id:2, name:"Leadership", std:"UK GDPR Arts 5(2), 24(1), 24(2) · ISO 22301 Cl 5.3",
     desc:"Assign accountability and ensure your organisation has the governance in place to manage data protection.",
     questions:[
-      {id:"c2_1",text:"Is there a named person in your organisation who is responsible for data protection?",guidance:"This person does not need to be a legal expert — they just need to be the named point of contact for all data protection matters and breach reports."},
-      {id:"c2_2",text:"Does your organisation have a written policy explaining how it handles personal data?",guidance:"A data protection policy covers what data you collect, why, how you keep it safe, and what staff should do if something goes wrong. Free template at ico.org.uk"},
-      {id:"c2_3",text:"Has this policy been reviewed and approved by your manager, trustees or board?",guidance:"Leadership approval creates accountability. Even a brief email confirmation is sufficient — record the approval date on the policy itself."},
-      {id:"c2_4",text:"Have you checked whether your organisation is required by law to appoint a Data Protection Officer?",guidance:"Most small charities do not need a DPO, but you must show you have checked. Free self-assessment guide at ico.org.uk — document your conclusion."},
-      {id:"c2_5",text:"Do all staff and volunteers know who to contact if they spot a data protection problem?",guidance:"Everyone should know who the named data protection contact is and how to reach them. Display the Key Contacts card at your premises."},
+      {id:"c2_1",text:"Is there a named person in your organisation who is responsible for data protection?",guidance:"This person does not need to be a legal expert — they just need to be the named point of contact for all data protection matters and breach reports.",action:"Appoint a named data protection lead and communicate their name and contact details to all staff and volunteers."},
+      {id:"c2_2",text:"Does your organisation have a written policy explaining how it handles personal data?",guidance:"A data protection policy covers what data you collect, why, how you keep it safe, and what staff should do if something goes wrong. Free template at ico.org.uk",action:"Create a data protection policy covering what data you collect, why, how you keep it safe, and what to do if something goes wrong. Free template at ico.org.uk"},
+      {id:"c2_3",text:"Has this policy been reviewed and approved by your manager, trustees or board?",guidance:"Leadership approval creates accountability. Even a brief email confirmation is sufficient — record the approval date on the policy itself.",action:"Submit your data protection policy to your manager, trustees or board for formal approval and record the approval date on the document."},
+      {id:"c2_4",text:"Have you checked whether your organisation is required by law to appoint a Data Protection Officer?",guidance:"Most small charities do not need a DPO, but you must show you have checked. Free self-assessment guide at ico.org.uk — document your conclusion.",action:"Complete the ICO DPO self-assessment and document your conclusion. Free guide at ico.org.uk"},
+      {id:"c2_5",text:"Do all staff and volunteers know who to contact if they spot a data protection problem?",guidance:"Everyone should know who the named data protection contact is and how to reach them. Display the Key Contacts card at your premises.",action:"Share the name and contact details of your data protection lead with all staff and volunteers. Display the Key Contacts card at your premises."},
     ]},
   { id:3, name:"Planning", std:"UK GDPR Arts 6, 7, 25, 32, 35 · DPA 2018 ss.70, 71, 114 · DUAA 2025 ss.70, 71 · EU CRA 2024 Annex I",
     desc:"Assess risks, plan how to manage them, and ensure privacy is built into new systems from the start.",
@@ -39,7 +41,7 @@ const PHASES = [
     questions:[
       {id:"c4_1",text:"Is there a written notice for donors and the public explaining what data you collect, why, and their rights?",guidance:"This privacy notice must be in plain English. It should be available on your website or displayed at your premises.",action:"Create a public privacy notice in plain English. Free template at ico.org.uk"},
       {id:"c4_2",text:"Do staff and volunteers receive a written notice explaining how their personal data is used by the organisation?",guidance:"Staff and volunteers have the same data protection rights as anyone else. Give the notice to all new staff and volunteers when they start.",action:"Create a staff and volunteer privacy notice."},
-      {id:"c4_3",text:"Is there an up-to-date written record of all personal data your charity holds?",guidance:"Your Record of Processing Activities (RoPA) must be kept current. Review it annually and whenever you start collecting new data types.",action:"Create or update your Record of Processing Activities (RoPA). Free template at ico.org.uk"},
+      {id:"c4_3",text:"Is there an up-to-date written record of all personal data your charity / organisation holds?",guidance:"Your Record of Processing Activities (RoPA) must be kept current. Review it annually and whenever you start collecting new data types.",action:"Create or update your Record of Processing Activities (RoPA). Free template at ico.org.uk"},
       {id:"c4_4",text:"If someone asks to see the personal data you hold about them, do you have a written process for responding within one calendar month?",guidance:"This is called a Subject Access Request (SAR). You must respond within one month for free.",action:"Document a Subject Access Request process with a one-month response commitment."},
       {id:"c4_5",text:"If someone asks you to delete their personal data, do you have a process for doing this and notifying any third parties?",guidance:"If you agree to delete, you must also tell any processors — such as your till provider — to delete it too.",action:"Create an erasure process including notifying processors."},
       {id:"c4_6",text:"Does every company that handles personal data on your behalf have a signed written agreement with you covering data protection?",guidance:"This is called a Data Processing Agreement (DPA). UK law requires one with every processor — till provider, IT support, payroll, cloud services.",action:"Put a signed Data Processing Agreement in place with every processor."},
@@ -49,7 +51,7 @@ const PHASES = [
   { id:5, name:"Business Impact Analysis", std:"UK GDPR Arts 35, 9 · ISO 22301 Cl 8.2 · EU CRA 2024 Annex I Pt I 2(h)",
     desc:"Identify your critical activities, their data dependencies, and how quickly you need to recover them.",
     questions:[
-      {id:"c5_1",text:"Have you written down which activities your charity absolutely cannot stop doing, even during a crisis?",guidance:"These are the things that, if they stopped, would cause serious harm — for example if donations could not be processed, or vulnerable beneficiaries could not be contacted.",action:"Identify and document your critical activities."},
+      {id:"c5_1",text:"Have you written down which activities your charity / organisation absolutely cannot stop doing, even during a crisis?",guidance:"These are the things that, if they stopped, would cause serious harm — for example if donations could not be processed, or vulnerable beneficiaries could not be contacted.",action:"Identify and document your critical activities."},
       {id:"c5_3",text:"If your computer systems went down today, do you know how quickly you would need each critical activity back up and running?",guidance:"For each important activity, agree a maximum downtime — for example: 'our till system must be back within 4 hours' or 'donor records must be accessible within 24 hours'.",action:"Set a Recovery Time Objective for each critical activity."},
       {id:"c5_4",text:"Are your backup arrangements written down — what is backed up, how often, where it is stored and who is responsible?",guidance:"Backups are your safety net if data is lost or a system fails. Ask your IT support to confirm what is currently backed up and how often.",action:"Document your backup arrangements in writing."},
       {id:"c5_5",text:"Have you done a formal privacy risk check for your most critical activities — especially any that involve health data or large amounts of personal information?",guidance:"UK law requires a written privacy risk check (called a DPIA) before carrying out any activity that is likely to create high risk to individuals.",action:"Carry out a DPIA for any critical activity involving health data or large volumes of personal data."},
@@ -276,7 +278,9 @@ const PROCESSOR_TYPES = [
 ];
 
 const ACTION_ITEMS = [
-  {code:"CTX-1",phase:"Phase 1: Context",desc:"Know what personal data your charity collects",qid:"c1_1",priority:"High"},
+  {code:"CTX-1",phase:"Phase 1: Context",desc:"Know what personal data your charity / organisation collects",qid:"c1_1",priority:"High"},
+  {code:"CTX-1b",phase:"Phase 1: Context",desc:"Record of what personal data your charity / organisation collects (Data Register)",qid:"c1_1b",priority:"High"},
+  {code:"CTX-1c",phase:"Phase 1: Context",desc:"Existing documents or policies covering personal data collected",qid:"c1_1c",priority:"Medium"},
   {code:"CTX-2",phase:"Phase 1: Context",desc:"Written record of legal reason (lawful basis) for collecting each data type",qid:"c1_2",priority:"High"},
   {code:"CTX-3",phase:"Phase 1: Context",desc:"Identified whether you collect special category / sensitive data",qid:"c1_3",priority:"High"},
   {code:"CTX-4",phase:"Phase 1: Context",desc:"Record of Processing Activities (RoPA) / Article 30 register",qid:"c1_4",priority:"High"},
@@ -330,13 +334,13 @@ const DEFINITIONS = [
   {term:"UK GDPR",         cat:"Legislation", meaning:"The principal data protection law in the United Kingdom following Brexit, retained from the EU GDPR. Applies to all organisations processing personal data about people in the UK. Maximum fines of £17.5 million or 4% of global annual turnover, whichever is higher.",ref:"UK GDPR (retained from EU Reg 2016/679) — in force 1 January 2021"},
   {term:"DPA 2018",        cat:"Legislation", meaning:"The Data Protection Act 2018 supplements UK GDPR, providing specific conditions and exemptions for UK law. It creates additional lawful bases and special category conditions, including schedules for employment, health, safeguarding and research.",ref:"Data Protection Act 2018 — read alongside UK GDPR"},
   {term:"DUAA 2025",       cat:"Legislation", meaning:"The Data (Use and Access) Act 2025, which updates the UK data protection framework. Key provisions include updated complaint-handling obligations requiring acknowledgement within 30 days and changes to digital records access.",ref:"DUAA 2025 ss.92, 101, 103, 164A"},
-  {term:"EU CRA 2024",     cat:"Legislation", meaning:"EU Regulation 2024/2847 (Cyber Resilience Act). Requires manufacturers of digital products (hardware and software) to meet cybersecurity standards and notify users of security incidents. Applies from September 2026; full enforcement December 2027. Relevant where your charity purchases digital products from EU suppliers.",ref:"EU CRA 2024 Art 14 — incident notification obligations"},
+  {term:"EU CRA 2024",     cat:"Legislation", meaning:"EU Regulation 2024/2847 (Cyber Resilience Act). Requires manufacturers of digital products (hardware and software) to meet cybersecurity standards and notify users of security incidents. Applies from September 2026; full enforcement December 2027. Relevant where your charity / organisation purchases digital products from EU suppliers.",ref:"EU CRA 2024 Art 14 — incident notification obligations"},
   {term:"ISO 22301",       cat:"Legislation", meaning:"The international standard for Business Continuity Management Systems (BCMS). Provides the structural framework for Phases 1–8 of this tool, covering context, leadership, planning, support, operation, performance evaluation and improvement.",ref:"ISO 22301:2019 — Business Continuity Management"},
   {term:"PECR",            cat:"Legislation", meaning:"Privacy and Electronic Communications Regulations 2003. Governs electronic marketing, cookies, and use of electronic communications. Requires consent for most marketing emails and affirmative opt-in for non-essential cookies.",ref:"PECR 2003 — implements EU ePrivacy Directive in UK law"},
   /* ── Core concepts ── */
   {term:"Personal data",   cat:"Core concept", meaning:"Any information that identifies or could identify a living individual — directly or indirectly. Includes names, email addresses, phone numbers, IP addresses, photos, payroll numbers, and any combination of information that singles someone out.",ref:"UK GDPR Art 4(1)"},
-  {term:"Processing",      cat:"Core concept", meaning:"Any operation performed on personal data — collecting, recording, organising, storing, adapting, retrieving, sharing, combining, restricting, erasing or destroying it. Almost everything your charity does with personal data is 'processing'.",ref:"UK GDPR Art 4(2)"},
-  {term:"Data controller", cat:"Core concept", meaning:"The organisation that determines the purposes and means of processing personal data. Your charity is the data controller for all personal data it holds about donors, volunteers, beneficiaries and staff. The controller is legally responsible for demonstrating compliance.",ref:"UK GDPR Art 4(7) — accountability principle Art 5(2)"},
+  {term:"Processing",      cat:"Core concept", meaning:"Any operation performed on personal data — collecting, recording, organising, storing, adapting, retrieving, sharing, combining, restricting, erasing or destroying it. Almost everything your charity / organisation does with personal data is 'processing'.",ref:"UK GDPR Art 4(2)"},
+  {term:"Data controller", cat:"Core concept", meaning:"The organisation that determines the purposes and means of processing personal data. Your charity / organisation is the data controller for all personal data it holds about donors, volunteers, beneficiaries and staff. The controller is legally responsible for demonstrating compliance.",ref:"UK GDPR Art 4(7) — accountability principle Art 5(2)"},
   {term:"Data processor",  cat:"Core concept", meaning:"A third party that processes personal data solely on behalf of and under the instruction of the data controller. Examples: payroll bureau, EPOS till provider, IT support, cloud storage, email marketing platform. A written Data Processing Agreement is required with every processor.",ref:"UK GDPR Art 4(8) — processor obligations Art 28"},
   {term:"Lawful basis",    cat:"Core concept", meaning:"The legal justification for processing personal data. One of six bases must apply and be documented before collection begins: (1) Consent, (2) Contract, (3) Legal obligation, (4) Vital interests, (5) Public task, (6) Legitimate interests. Choosing the wrong basis or having none is unlawful.",ref:"UK GDPR Art 6 — basis must be identified before processing begins"},
   {term:"Special category data", cat:"Core concept", meaning:"Eight categories of personal data requiring extra legal protection: (1) health data, (2) racial or ethnic origin, (3) political opinions, (4) religious or philosophical beliefs, (5) trade union membership, (6) genetic data, (7) biometric data used for identification, (8) sex life or sexual orientation. Requires both an Art 6 lawful basis AND a separate Art 9(2) condition.",ref:"UK GDPR Art 9 — processing is prohibited unless a condition applies"},
@@ -378,6 +382,7 @@ const OPTS = [
   {value:"yes",label:"Yes",cls:"opt-yes"},
   {value:"in_progress",label:"In progress",cls:"opt-prog"},
   {value:"no",label:"No",cls:"opt-no"},
+  {value:"dont_know",label:"Don't Know",cls:"opt-dk"},
   {value:"not_applicable",label:"Not applicable",cls:"opt-na"},
 ];
 
@@ -477,7 +482,7 @@ function riskScore(area, answers) {
   const vals = area.qids.map(qid=>getAnsValue(answers,qid));
   const answered = vals.filter(v=>v&&v!=="not_applicable").length;
   if(answered===0) return {level:"Unknown",color:"#9ca3af",bg:"#f9fafb"};
-  const nos = vals.filter(v=>v==="no").length;
+  const nos = vals.filter(v=>v==="no"||v==="dont_know").length;
   const progs = vals.filter(v=>v==="in_progress").length;
   const score = nos*2 + progs*1;
   const max = area.qids.length*2;
@@ -680,6 +685,7 @@ html,body,#root{height:100%}
 .opt-yes.sel{background:#f0fdf4;border-color:#22c55e;color:#15803d}
 .opt-prog.sel{background:#fffbeb;border-color:#f59e0b;color:#b45309}
 .opt-no.sel{background:#fef2f2;border-color:#ef4444;color:#b91c1c}
+.opt-dk.sel{background:#eff6ff;border-color:#3b82f6;color:#1d4ed8}
 .opt-na.sel{background:#f9fafb;border-color:#9ca3af;color:#6b7280}
 .qc-g-btn{font-size:10.5px;color:var(--t3);cursor:pointer;background:none;border:none;padding:0;font-family:var(--sans);display:flex;align-items:center;gap:3px}
 .qc-g-btn:hover{color:var(--t1)}
@@ -696,6 +702,10 @@ html,body,#root{height:100%}
 .evidence-badge{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:8px;color:var(--t3);background:var(--card);border:1px solid var(--b2);border-radius:4px;padding:2px 6px;cursor:pointer;transition:all .12s}
 .evidence-badge:hover{border-color:var(--t1);color:var(--t1)}
 .evidence-badge.filled{color:#15803d;border-color:#86efac;background:#f0fdf4}
+.qc.referred{border-left-color:#f59e0b}
+.refer-panel{background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:10px 12px;margin-top:8px}
+.refer-badge{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:8px;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:4px;padding:2px 6px;cursor:pointer;transition:all .12s}
+.refer-badge:hover{border-color:#f59e0b}
 
 /* WORKFLOW ALERTS */
 .workflow-alert{display:flex;align-items:flex-start;gap:10px;border-radius:9px;padding:12px 14px;margin-bottom:10px;border:1.5px solid}
@@ -925,6 +935,7 @@ export default function App() {
   const [sbOpen, setSb]   = useState(false);
   const [guidance, setG]  = useState({});
   const [evidenceOpen,setEvOpen] = useState({});
+  const [referOpen,setReferOpen] = useState({});
   const [loaded, setLoaded] = useState(false);
   const [savedAt, setSavedAt] = useState(null);
   const [atFilter, setAtFilter] = useState("all");
@@ -958,6 +969,7 @@ export default function App() {
   const contentRef = useRef(null);
   const toggleG=id=>setG(p=>({...p,[id]:!p[id]}));
   const toggleEv=id=>setEvOpen(p=>({...p,[id]:!p[id]}));
+  const toggleRefer=id=>setReferOpen(p=>({...p,[id]:!p[id]}));
   const toolsUnlocked = allPhaseQuestionsAnswered(st.answers);
 
   const nav=v=>{
@@ -1096,7 +1108,7 @@ export default function App() {
               {view==="compliance-report"&& <ComplianceReport st={st} onNav={nav}/>}
               {typeof view==="number" && phase &&
                 <PhaseView phase={phase} answers={st.answers} setAns={setAns} guidance={guidance} toggleG={toggleG}
-                  evidenceOpen={evidenceOpen} toggleEv={toggleEv} onNav={nav} st={st} upd={upd}/>}
+                  evidenceOpen={evidenceOpen} toggleEv={toggleEv} referOpen={referOpen} toggleRefer={toggleRefer} onNav={nav} st={st} upd={upd}/>}
               {view==="doc-checklist"   && <DocChecklist state={st.docState} onChange={v=>upd("docState",v)} onNav={nav}/>}
               {view==="retention"       && <RetentionSchedule state={st.retState} onChange={v=>upd("retState",v)} onNav={nav}/>}
               {view==="data-register"   && <DataRegister charityName={st.charityName} icoNumber={st.icoNumber} onNav={nav}/>}
@@ -1131,7 +1143,7 @@ function AccordionPhases({phases, answers, currentView, onNav}) {
   const phaseStates = phases.map((p, idx) => {
     const sc = phaseScore(p, answers);
     const allAnswered = p.questions.every(q => getAnsValue(answers, q.id));
-    const hasNo = p.questions.some(q => getAnsValue(answers, q.id) === "no");
+    const hasNo = p.questions.some(q => { const v=getAnsValue(answers,q.id); return v==="no"||v==="dont_know"; });
     const isComplete = allAnswered && !hasNo;
     const hasProgress = sc.answered > 0;
 
@@ -1268,6 +1280,7 @@ function Dashboard({answers, onPhase, charityName, st, upd}) {
     yes:Object.values(answers).filter(a=>(a?.value||a)==="yes").length,
     in_progress:Object.values(answers).filter(a=>(a?.value||a)==="in_progress").length,
     no:Object.values(answers).filter(a=>(a?.value||a)==="no").length,
+    dont_know:Object.values(answers).filter(a=>(a?.value||a)==="dont_know").length,
     not_applicable:Object.values(answers).filter(a=>(a?.value||a)==="not_applicable").length,
   };
   const unanswered=totalQ-overall.answered;
@@ -1331,11 +1344,11 @@ function Dashboard({answers, onPhase, charityName, st, upd}) {
           <div style={{padding:"14px 22px",borderBottom:`1px solid ${t.border}`}}>
             {/* Stacked progress bar */}
             <div style={{display:"flex",height:10,borderRadius:5,overflow:"hidden",marginBottom:10,gap:1}}>
-              {[{n:counts.yes,c:"#15803d"},{n:counts.in_progress,c:"#f59e0b"},{n:counts.no,c:"#ef4444"},{n:counts.not_applicable,c:"#9ca3af"},{n:unanswered,c:"#d1d5db"}].map((b,i)=>b.n>0&&<div key={i} style={{flex:b.n,background:b.c,minWidth:2,transition:"flex .5s ease"}}/>)}
+              {[{n:counts.yes,c:"#15803d"},{n:counts.in_progress,c:"#f59e0b"},{n:counts.no,c:"#ef4444"},{n:counts.dont_know,c:"#3b82f6"},{n:counts.not_applicable,c:"#9ca3af"},{n:unanswered,c:"#d1d5db"}].map((b,i)=>b.n>0&&<div key={i} style={{flex:b.n,background:b.c,minWidth:2,transition:"flex .5s ease"}}/>)}
             </div>
             {/* Legend */}
             <div style={{display:"flex",flexWrap:"wrap",gap:"6px 16px",marginBottom:8}}>
-              {[{label:"Compliant",n:counts.yes,c:"#15803d"},{label:"In progress",n:counts.in_progress,c:"#b45309"},{label:"Action required",n:counts.no,c:"#b91c1c"},{label:"Not applicable",n:counts.not_applicable,c:"#6b7280"},...(unanswered>0?[{label:"Not yet answered",n:unanswered,c:"#9ca3af"}]:[])].map(b=>b.n>0&&(
+              {[{label:"Compliant",n:counts.yes,c:"#15803d"},{label:"In progress",n:counts.in_progress,c:"#b45309"},{label:"Action required",n:counts.no,c:"#b91c1c"},{label:"Don't Know",n:counts.dont_know,c:"#1d4ed8"},{label:"Not applicable",n:counts.not_applicable,c:"#6b7280"},...(unanswered>0?[{label:"Not yet answered",n:unanswered,c:"#9ca3af"}]:[])].map(b=>b.n>0&&(
                 <div key={b.label} style={{display:"flex",alignItems:"center",gap:5}}>
                   <div style={{width:8,height:8,borderRadius:2,background:b.c,flexShrink:0}}/>
                   <span style={{fontFamily:"var(--mono)",fontSize:10,color:"var(--t2)"}}><strong style={{color:b.c}}>{b.n}</strong> {b.label}</span>
@@ -1534,7 +1547,7 @@ function ComplianceReport({st, onNav}) {
   });
 
   const criticalAndHigh = risks.filter(r=>r.rs.level==="Critical"||r.rs.level==="High");
-  const gapActions = ACTION_ITEMS.filter(a=>getAnsValue(st.answers,a.qid)==="no"&&(a.priority==="Critical"||a.priority==="High"));
+  const gapActions = ACTION_ITEMS.filter(a=>{const v=getAnsValue(st.answers,a.qid);return (v==="no"||v==="dont_know")&&(a.priority==="Critical"||a.priority==="High");});
 
   return (
     <>
@@ -1583,12 +1596,14 @@ function ComplianceReport({st, onNav}) {
                 const yesN=Object.values(st.answers).filter(a=>(a?.value||a)==="yes").length;
                 const inpN=Object.values(st.answers).filter(a=>(a?.value||a)==="in_progress").length;
                 const noN =Object.values(st.answers).filter(a=>(a?.value||a)==="no").length;
+                const dkN =Object.values(st.answers).filter(a=>(a?.value||a)==="dont_know").length;
                 const naN =Object.values(st.answers).filter(a=>(a?.value||a)==="not_applicable").length;
                 const unN =totalQ-overall.answered;
                 const bars=[
                   {n:yesN,c:"#15803d",l:"Compliant"},
                   {n:inpN,c:"#f59e0b",l:"In progress"},
                   {n:noN, c:"#ef4444",l:"Action required"},
+                  {n:dkN, c:"#3b82f6",l:"Don't Know"},
                   {n:naN, c:"#9ca3af",l:"Not applicable"},
                   ...(unN>0?[{n:unN,c:"#d1d5db",l:"Not yet answered"}]:[]),
                 ];
@@ -1614,7 +1629,7 @@ function ComplianceReport({st, onNav}) {
           <div className="report-phase-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0",border:"1px solid var(--b)",borderRadius:8,overflow:"hidden"}}>
             {PHASES.map((p,i)=>{
               const sc=phaseScore(p,st.answers);
-              const hasGap=p.questions.some(q=>getAnsValue(st.answers,q.id)==="no");
+              const hasGap=p.questions.some(q=>{const v=getAnsValue(st.answers,q.id);return v==="no"||v==="dont_know";});
               const statusColor=sc.answered===0?"#9ca3af":hasGap?"#b91c1c":sc.pct===100?"#15803d":"#b45309";
               const statusLabel=sc.answered===0?"Not started":hasGap?"Action required":sc.pct===100?"Complete":"In progress";
               return (
@@ -1750,7 +1765,7 @@ function ComplianceReport({st, onNav}) {
 ═══════════════════════════════════════════════════════════════ */
 function Instructions({onNav, answers}) {
   const steps = [
-    {num:"1", icon:"phase1", title:"Tell us about your charity", desc:"Enter your charity name, ICO number and who is responsible for data protection.", action:"Start Phase 1", v:1, time:"5 min"},
+    {num:"1", icon:"phase1", title:"Tell us about your charity / organisation", desc:"Enter your charity / organisation name, ICO number and who is responsible for data protection.", action:"Start Phase 1", v:1, time:"5 min"},
     {num:"2", icon:"phase2", title:"Confirm your leadership", desc:"Make sure someone is named as your data protection lead and your policy is approved.", action:"Go to Phase 2", v:2, time:"5 min"},
     {num:"3", icon:"phase3", title:"Check your risks", desc:"Tell us whether you've assessed your data risks and done privacy checks before new systems.", action:"Go to Phase 3", v:3, time:"10 min"},
     {num:"4", icon:"phase4", title:"Put documents in place", desc:"Privacy notices, supplier agreements, staff training — make sure the basics are covered.", action:"Go to Phase 4", v:4, time:"10 min"},
@@ -1763,7 +1778,7 @@ function Instructions({onNav, answers}) {
   const tools = [
     {icon:"docChecklist", title:"Documentation Checklist", desc:"Track the 15 documents UK law requires you to have.", v:"doc-checklist"},
     {icon:"retention", title:"Retention Schedule", desc:"How long should you keep different types of data? All pre-filled.", v:"retention"},
-    {icon:"dataRegister", title:"Data Register", desc:"A record of every type of personal data your charity holds.", v:"data-register"},
+    {icon:"dataRegister", title:"Data Register", desc:"A record of every type of personal data your charity / organisation holds.", v:"data-register"},
     {icon:"dpia", title:"DPIA Template", desc:"The privacy risk assessment form required for high-risk activities.", v:"dpia"},
     {icon:"irp", title:"Incident Response Plan", desc:"Print this and put it on the wall. Your step-by-step guide if something goes wrong.", v:"irp"},
     {icon:"keyContacts", title:"Key Contacts", desc:"Print this and display it. Who to call in an emergency.", v:"key-contacts"},
@@ -1784,7 +1799,7 @@ function Instructions({onNav, answers}) {
         </div>
         <div style={{fontFamily:"var(--serif)",fontSize:26,lineHeight:1.25,marginBottom:8}}>Data Privacy Incident Response Framework</div>
         <div style={{fontSize:14,opacity:0.75,lineHeight:1.6,maxWidth:560}}>
-          This tool helps your charity meet its UK data protection obligations — step by step, in plain English. You do not need to be a legal expert to use it.
+          This tool helps your charity / organisation meet its UK data protection obligations — step by step, in plain English. You do not need to be a legal expert to use it.
         </div>
         <button onClick={()=>onNav(1)} style={{marginTop:16,fontFamily:"var(--sans)",fontSize:13,fontWeight:600,color:"var(--t1)",background:"#fff",border:"none",borderRadius:7,padding:"10px 20px",cursor:"pointer"}}>
           Start with Phase 1 →
@@ -2065,7 +2080,7 @@ function OrgDetailsBlock({fields,values,onChange}) {
 /* ═══════════════════════════════════════════════════════════════
    PHASE VIEW  (with evidence capture, conditional workflows)
 ═══════════════════════════════════════════════════════════════ */
-function PhaseView({phase,answers,setAns,guidance,toggleG,evidenceOpen,toggleEv,onNav,st,upd}) {
+function PhaseView({phase,answers,setAns,guidance,toggleG,evidenceOpen,toggleEv,referOpen,toggleRefer,onNav,st,upd}) {
   const sc=phaseScore(phase,answers);
   const hasSpecialCat=getAnsValue(answers,"c1_3")==="yes";
 
@@ -2078,7 +2093,7 @@ function PhaseView({phase,answers,setAns,guidance,toggleG,evidenceOpen,toggleEv,
       {key:"dpName",label:"Named data protection lead",ref:"LDR-0",placeholder:"Full name of the person assigned as data protection lead",guidance:"Enter the full name of the person assigned as data protection lead.",multiline:false},
     ],
     5:[
-      {key:"criticalActivities",label:"What are your most important day-to-day activities?",ref:"BIA-0a",placeholder:"e.g. Processing donations, managing volunteer rotas, running the till…",guidance:"Think about what your charity could not do without.",multiline:true},
+      {key:"criticalActivities",label:"What are your most important day-to-day activities?",ref:"BIA-0a",placeholder:"e.g. Processing donations, managing volunteer rotas, running the till…",guidance:"Think about what your charity / organisation could not do without.",multiline:true},
       {key:"dataDependencies",label:"What personal information do those activities rely on?",ref:"BIA-0b",placeholder:"e.g. Donor bank details, volunteer contact lists, beneficiary health records…",guidance:"For each activity above, write down what personal information it uses.",multiline:true},
     ],
   };
@@ -2100,7 +2115,7 @@ function PhaseView({phase,answers,setAns,guidance,toggleG,evidenceOpen,toggleEv,
         <div className="workflow-alert wf-high">
           <Icon name="docChecklist" size={14} style={{color:"#92400e",flexShrink:0}} />
           <div style={{fontSize:12,color:"#92400e",lineHeight:1.55}}>
-            <strong>Special category data selected.</strong> You must document an Art 9(2) condition for each type in your Data Register, and complete a DPIA before processing begins. These requirements activate automatically when Q3 is answered "Yes".
+            <strong>Special category data selected.</strong> You must document an Art 9(2) condition for each type in your Data Register, and complete a DPIA before processing begins. These requirements activate automatically when Q5 is answered "Yes".
           </div>
         </div>
       )}
@@ -2128,19 +2143,32 @@ function PhaseView({phase,answers,setAns,guidance,toggleG,evidenceOpen,toggleEv,
       {phase.questions.map((q,i)=>{
         const ansObj=answers[q.id]||{};
         const val=ansObj.value;
-        const cls=val?`ans-${val}`:"";
+        const isReferred=!!ansObj.referred;
+        const cls=`${val?`ans-${val}`:""}${isReferred?" referred":""}`;
         const showGuide=guidance[q.id];
         const showEvidence=evidenceOpen[q.id];
+        const showRefer=referOpen[q.id];
         const hasEvidence=ansObj.evidenceNote||ansObj.approvedBy||ansObj.approvedDate;
         return (
           <div key={q.id} className={`qc ${cls}`}>
             <div className="qc-top">
-              <div className="qc-num">{i+1}</div>
+              <div className="qc-num">
+                {i+1}
+                {isReferred && <span style={{display:"block",fontSize:9,color:"#f59e0b",lineHeight:1}}>⚑</span>}
+              </div>
               <div className="qc-body">
                 {/* Simplified: question text first, guidance collapsed */}
                 <div className="qc-text">{q.text}</div>
+
+                {/* Inline note — shown permanently when question has a note field */}
+                {q.note && (
+                  <div style={{background:"#fffbeb",border:"1px solid #fde68a",borderRadius:5,padding:"7px 11px",marginBottom:10,fontSize:11.5,color:"#92400e",lineHeight:1.6}}>
+                    <strong>Note: </strong>{q.note}
+                  </div>
+                )}
+
                 <div className="qc-opts">
-                  {OPTS.map(o=>(
+                  {(q.opts||OPTS).map(o=>(
                     <button key={o.value} className={`qc-opt ${o.cls} ${val===o.value?"sel":""}`}
                       onClick={()=>setAns(q.id,"value",o.value)}>
                       {o.label}
@@ -2158,6 +2186,9 @@ function PhaseView({phase,answers,setAns,guidance,toggleG,evidenceOpen,toggleEv,
                         {hasEvidence ? <span style={{display:"inline-flex",alignItems:"center",gap:6}}><Icon name="statusCompliant" size={10} /> Evidence recorded</span> : "+ Add evidence / approval"}
                     </button>
                   )}
+                  <button className={`refer-badge`} onClick={()=>toggleRefer(q.id)}>
+                    ⚑ {isReferred ? `Referred to ${ansObj.referredTo||"someone"}` : "Refer / flag for later"}
+                  </button>
                 </div>
 
                 {showGuide && (
@@ -2166,23 +2197,66 @@ function PhaseView({phase,answers,setAns,guidance,toggleG,evidenceOpen,toggleEv,
                 {val==="no" && q.action && (
                   <div className="action-box"><span style={{display:"inline-flex",alignItems:"center",gap:6}}><Icon name="warning" size={12} /> Action required: {q.action}</span></div>
                 )}
+                {val==="dont_know" && q.action && (
+                  <div className="action-box" style={{background:"#eff6ff",borderColor:"#93c5fd",color:"#1d4ed8"}}><span style={{display:"inline-flex",alignItems:"center",gap:6}}><Icon name="help" size={12} /> Needs investigation: {q.action}</span></div>
+                )}
                 {val==="in_progress" && q.action && (
                   <div className="action-box action-box-prog"><span style={{display:"inline-flex",alignItems:"center",gap:6}}><Icon name="statusPartial" size={12} /> In progress: {q.action}</span></div>
+                )}
+
+                {/* Refer panel */}
+                {showRefer && (
+                  <div className="refer-panel">
+                    <div style={{fontFamily:"var(--mono)",fontSize:8.5,textTransform:"uppercase",letterSpacing:".07em",color:"#92400e",marginBottom:6}}>Refer this question</div>
+                    <div style={{fontSize:11.5,color:"#92400e",lineHeight:1.6,marginBottom:10}}>
+                      Use this to flag the question for a colleague who is better placed to answer it.
+                      Your note is saved so you can follow up — the question will remain open until you come back and select an answer.
+                    </div>
+                    <div className="evidence-row" style={{marginBottom:8}}>
+                      <div>
+                        <div className="evidence-label">Who should answer this? (name / role)</div>
+                        <input className="evidence-in" placeholder="e.g. Finance Manager, IT Lead…"
+                          value={ansObj.referredTo||""} onChange={e=>setAns(q.id,"referredTo",e.target.value)}/>
+                      </div>
+                      <div>
+                        <div className="evidence-label">Note for them (optional)</div>
+                        <input className="evidence-in" placeholder="e.g. Please check with the payroll team…"
+                          value={ansObj.referNote||""} onChange={e=>setAns(q.id,"referNote",e.target.value)}/>
+                      </div>
+                    </div>
+                    <button
+                      onClick={()=>setAns(q.id,"referred",!isReferred)}
+                      style={{fontFamily:"var(--mono)",fontSize:10,padding:"5px 14px",borderRadius:5,border:"1px solid",cursor:"pointer",
+                        background:isReferred?"#fef2f2":"#fffbeb",borderColor:isReferred?"#fca5a5":"#f59e0b",
+                        color:isReferred?"#b91c1c":"#92400e"}}>
+                      {isReferred ? "✕ Remove referral" : "⚑ Mark as referred"}
+                    </button>
+                  </div>
                 )}
 
                 {/* Evidence / approval panel */}
                 {showEvidence && (
                   <div className="evidence-panel">
-                    <div style={{fontFamily:"var(--mono)",fontSize:8.5,textTransform:"uppercase",letterSpacing:".07em",color:"var(--t3)",marginBottom:8}}>Evidence & Approval Metadata</div>
+                    <div style={{fontFamily:"var(--mono)",fontSize:8.5,textTransform:"uppercase",letterSpacing:".07em",color:"var(--t3)",marginBottom:8}}>Evidence & Approval Record</div>
+
+                    {/* Explanation callout */}
+                    <div style={{background:"#f0f9ff",border:"1px solid #bae6fd",borderRadius:6,padding:"9px 12px",marginBottom:12,fontSize:11.5,color:"#0369a1",lineHeight:1.6}}>
+                      <strong style={{display:"block",marginBottom:3}}>How to use these fields</strong>
+                      These fields create an <strong>audit trail</strong> — they do not store or attach files.
+                      Use them to record <em>where</em> your evidence lives (e.g. a SharePoint link, folder path or filename)
+                      so that anyone reviewing your compliance — trustees, auditors or the ICO — can locate the original document quickly.
+                      This information feeds directly into your <strong>Compliance Report</strong>.
+                    </div>
+
                     <div className="evidence-row">
                       <div>
-                        <div className="evidence-label">Evidence note / document reference</div>
-                        <input className="evidence-in" placeholder="e.g. Policy v2.1 signed 01/04/2026, stored in SharePoint…"
+                        <div className="evidence-label">Where is the evidence? <span style={{fontWeight:400,color:"var(--t3)"}}>(document name, folder path or link — no file is attached)</span></div>
+                        <input className="evidence-in" placeholder="e.g. 'Data Protection Policy v2.1 — SharePoint › Governance › Policies' or paste a link"
                           value={ansObj.evidenceNote||""} onChange={e=>setAns(q.id,"evidenceNote",e.target.value)}/>
                       </div>
                       <div>
                         <div className="evidence-label">Approved by</div>
-                        <input className="evidence-in" placeholder="Full name and role…"
+                        <input className="evidence-in" placeholder="Full name and role — e.g. Jane Smith, Chair of Trustees"
                           value={ansObj.approvedBy||""} onChange={e=>setAns(q.id,"approvedBy",e.target.value)}/>
                       </div>
                     </div>
@@ -2193,8 +2267,8 @@ function PhaseView({phase,answers,setAns,guidance,toggleG,evidenceOpen,toggleEv,
                           value={ansObj.approvedDate||""} onChange={e=>setAns(q.id,"approvedDate",e.target.value)}/>
                       </div>
                       <div>
-                        <div className="evidence-label">Version / review date</div>
-                        <input className="evidence-in" placeholder="e.g. v1, next review Jan 2027…"
+                        <div className="evidence-label">Document version / next review date</div>
+                        <input className="evidence-in" placeholder="e.g. v1.0, next review Jan 2027"
                           value={ansObj.version||""} onChange={e=>setAns(q.id,"version",e.target.value)}/>
                       </div>
                     </div>
@@ -2305,7 +2379,7 @@ function RetentionSchedule({state,onChange,onNav}) {
   return (
     <>
       <div className="page-title">Retention Schedule</div>
-      <div className="page-sub">Statutory and recommended retention periods for 32 common charity data types. Set your adjusted period in the last column.</div>
+      <div className="page-sub">Statutory and recommended retention periods for 32 common charity / organisation data types. Set your adjusted period in the last column.</div>
       {groups.map(g=>(
         <div key={g.label} style={{marginBottom:16}}>
           <div className="sec-label">{g.label}</div>
@@ -2370,7 +2444,7 @@ const DATA_REGISTER = [
   {id:"dr08",cat:"Employee health and absence records",type:"Employees",data:"Sickness absence dates, reason for absence, GP fit notes, occupational health reports",cls:"Sensitive",purpose:"Absence management; statutory sick pay; occupational health",basis:"Art 6(1)(b) — Contract; Art 6(1)(c) — Legal obligation",art9:"Art 9(2)(b) — Employment, social security and social protection",recipients:"HR manager; line manager; occupational health provider",storage:"HR system; locked physical HR file",geo:"Within UK/EU",retention:"6 years",dpia:"No",security:"Access restricted to HR and line manager only; encrypted if digital"},
   {id:"dr09",cat:"Trustee governance records",type:"Trustees / Board Members",data:"Full name, address, date of appointment, proof of eligibility, meeting minutes",cls:"Personal",purpose:"Legal governance obligations; Charity Commission reporting",basis:"Art 6(1)(c) — Legal obligation",art9:"N/A",recipients:"Charity Commission; internal board secretary",storage:"Board governance records / minute books",geo:"Within UK/EU",retention:"Permanently",dpia:"No",security:"Access restricted to board secretary and CEO; locked storage"},
   {id:"dr10",cat:"Marketing consent and campaign data",type:"Donors / Supporters",data:"Email address, contact preferences, opt-in date and method, campaign responses",cls:"Personal",purpose:"Marketing communications; fundraising appeals; newsletters",basis:"Art 6(1)(a) — Consent",art9:"N/A",recipients:"Marketing team; email platform provider (processor)",storage:"CRM / email marketing platform",geo:"Within UK/EU",retention:"6 months from campaign end",dpia:"No",security:"Consent records maintained; unsubscribe mechanism in place; DPA with email provider"},
-  {id:"dr11",cat:"CCTV footage",type:"Staff / Visitors / Public",data:"Visual footage of individuals at charity premises",cls:"Personal",purpose:"Premises security; deterring and detecting crime",basis:"Art 6(1)(f) — Legitimate interests",art9:"N/A",recipients:"Named security lead; police (if crime reported)",storage:"On-site DVR / NVR system; cloud storage if applicable",geo:"Within UK/EU",retention:"31 days (review regularly)",dpia:"Yes",security:"Physical access control to DVR; retention limit enforced; DPIA completed; signage in place"},
+  {id:"dr11",cat:"CCTV footage",type:"Staff / Visitors / Public",data:"Visual footage of individuals at charity / organisation premises",cls:"Personal",purpose:"Premises security; deterring and detecting crime",basis:"Art 6(1)(f) — Legitimate interests",art9:"N/A",recipients:"Named security lead; police (if crime reported)",storage:"On-site DVR / NVR system; cloud storage if applicable",geo:"Within UK/EU",retention:"31 days (review regularly)",dpia:"Yes",security:"Physical access control to DVR; retention limit enforced; DPIA completed; signage in place"},
   {id:"dr12",cat:"Website analytics and cookies",type:"Website Visitors",data:"IP addresses, browser type, pages visited, session duration",cls:"Personal",purpose:"Website performance monitoring; user experience improvement",basis:"Art 6(1)(f) — Legitimate interests (analytics); Art 6(1)(a) — Consent (marketing cookies)",art9:"N/A",recipients:"Analytics platform provider (e.g. Google Analytics)",storage:"Analytics platform (third party)",geo:"Outside UK/EU (if US provider)",retention:"26 months maximum",dpia:"No",security:"Cookie consent banner in place; privacy policy updated; DPA with analytics provider"},
 ];
 
@@ -2381,7 +2455,7 @@ function DataRegister({charityName, icoNumber, onNav}) {
   return (
     <>
       <div className="page-title">Data Register</div>
-      <div className="page-sub">Article 30 Record of Processing Activities (RoPA) · Pre-populated with 12 common charity scenarios · UK GDPR Art 30</div>
+      <div className="page-sub">Article 30 Record of Processing Activities (RoPA) · Pre-populated with 12 common charity / organisation scenarios · UK GDPR Art 30</div>
       <div style={{background:"var(--card)",border:"1px solid var(--b)",borderRadius:9,padding:"12px 16px",marginBottom:12,display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:12}}>
         {[
           {label:"Controller name", val:charityName, hint:"Complete in Phase 1"},
@@ -2616,7 +2690,7 @@ function ActionTracker({answers,state,onChange,filter,setFilter,charityName,onNa
 
   const items=ACTION_ITEMS.map(a=>{
     const v=getAnsValue(answers,a.qid);
-    const status=v==="yes"?"Complete":v==="in_progress"?"In progress":v==="no"?"Action required":v==="not_applicable"?"N/A":"Not answered";
+    const status=v==="yes"?"Complete":v==="in_progress"?"In progress":v==="no"?"Action required":v==="dont_know"?"Needs investigation":v==="not_applicable"?"N/A":"Not answered";
     return {...a,status};
   });
 
