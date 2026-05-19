@@ -969,19 +969,12 @@ export default function App() {
   const toggleG=id=>setG(p=>({...p,[id]:!p[id]}));
   const toggleEv=id=>setEvOpen(p=>({...p,[id]:!p[id]}));
   const toggleRefer=id=>setReferOpen(p=>({...p,[id]:!p[id]}));
-  const toolsUnlocked = allPhaseQuestionsAnswered(st.answers);
-
   const nav=v=>{
-    if(isToolView(v) && !toolsUnlocked) return;
     setView(v);
     setSb(false);
     // Always scroll the content pane back to the top on every navigation
     if(contentRef.current) contentRef.current.scrollTop = 0;
   };
-
-  useEffect(()=>{
-    if(loaded && isToolView(view) && !toolsUnlocked) setView("instructions");
-  },[loaded, view, toolsUnlocked]);
 
   const phase=typeof view==="number"?PHASES.find(p=>p.id===view):null;
   const overall=overallScore(st.answers);
@@ -1233,7 +1226,6 @@ const TOOLS_LIST = [
 
 function AccordionTools({currentView, onNav, answers}) {
   const [open, setOpen] = useState(false); // collapsed by default
-  const toolsUnlocked = allPhaseQuestionsAnswered(answers);
 
   return (
     <div style={{borderTop:"1px solid var(--b2)"}}>
@@ -1251,11 +1243,11 @@ function AccordionTools({currentView, onNav, answers}) {
           <button
             key={t.v}
             className={`tool-item ${currentView===t.v?"active":""}`}
-            onClick={()=>toolsUnlocked && onNav(t.v)}
-            title={toolsUnlocked ? t.label : "Complete all 8 phases to unlock tools"}
-            style={{opacity:toolsUnlocked ? 1 : 0.55,cursor:toolsUnlocked ? "pointer" : "not-allowed"}}
+            onClick={()=>onNav(t.v)}
+            title={t.label}
+            style={{opacity:1,cursor:"pointer"}}
           >
-            <span style={{fontSize:12,flexShrink:0}}>{toolsUnlocked ? <Icon name={t.icon} size={12} /> : <Icon name="lock" size={12} />}</span>
+            <span style={{fontSize:12,flexShrink:0}}><Icon name={t.icon} size={12} /></span>
             <span className="tool-name">{t.label}</span>
           </button>
         ))}
@@ -1362,7 +1354,7 @@ function Dashboard({answers, onPhase, charityName, st, upd}) {
       </div>
 
       {/* ── Compliance Report CTA — shown once org info + any answers exist ── */}
-      {(st.charityName || st.icoNumber || st.dpName) && hasAnswers && (
+      {(st.charityName || st.icoNumber || st.dpName) && (
         <div style={{
           display:"flex", alignItems:"center", justifyContent:"space-between",
           gap:14, background:"var(--card)", border:"1px solid var(--b)",
@@ -1785,8 +1777,6 @@ function Instructions({onNav, answers}) {
     {icon:"complianceReport", title:"Compliance Report", desc:"A printable summary to share with trustees or management.", v:"compliance-report"},
   ];
 
-  const toolsUnlocked = allPhaseQuestionsAnswered(answers);
-
   return (
     <>
       {/* Welcome banner */}
@@ -1846,18 +1836,18 @@ function Instructions({onNav, answers}) {
       </div>
 
       {/* Tools */}
-      <div className="sec-label">Tools — complete after the phases</div>
+      <div className="sec-label">Tools</div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,180px),1fr))",gap:8,marginBottom:20}}>
         {tools.map(t=>(
-          <div key={t.v} onClick={toolsUnlocked ? ()=>onNav(t.v) : undefined} style={{background:"var(--card)",border:"1px solid var(--b)",borderRadius:9,padding:"13px 15px",cursor:toolsUnlocked ? "pointer" : "not-allowed",transition:"border-color .12s",opacity:toolsUnlocked ? 1 : 0.6,filter:toolsUnlocked ? "none" : "grayscale(50%)"}}
-            onMouseEnter={toolsUnlocked ? e=>e.currentTarget.style.borderColor="var(--t1)" : undefined}
-            onMouseLeave={toolsUnlocked ? e=>e.currentTarget.style.borderColor="var(--b)" : undefined}
-            title={toolsUnlocked ? t.title : "Complete all 8 phases to unlock tools"}>
-            <div style={{fontSize:18,marginBottom:6}}>{toolsUnlocked ? <Icon name={t.icon} size={18} /> : <Icon name="lock" size={18} />}</div>
+          <div key={t.v} onClick={()=>onNav(t.v)} style={{background:"var(--card)",border:"1px solid var(--b)",borderRadius:9,padding:"13px 15px",cursor:"pointer",transition:"border-color .12s",opacity:1,filter:"none"}}
+            onMouseEnter={e=>e.currentTarget.style.borderColor="var(--t1)"}
+            onMouseLeave={e=>e.currentTarget.style.borderColor="var(--b)"}
+            title={t.title}>
+            <div style={{fontSize:18,marginBottom:6}}><Icon name={t.icon} size={18} /></div>
             <div style={{fontSize:12,fontWeight:700,color:"var(--t1)",marginBottom:4}}>{t.title}</div>
             <div style={{fontSize:11,color:"var(--t3)",lineHeight:1.45}}>{t.desc}</div>
             <div style={{fontFamily:"var(--mono)",fontSize:9.5,color:"var(--t3)",marginTop:8}}>
-              {toolsUnlocked ? "Open tool →" : "Complete all 8 phases to unlock"}
+              Open tool →
             </div>
           </div>
         ))}
