@@ -459,8 +459,7 @@ function allPhaseQuestionsAnswered(answers) {
 function isToolView(view) {
   return [
     "doc-checklist","retention","data-register","dpia","irp",
-    "key-contacts","action-tracker","breach-register","scenario-sim",
-    "compliance-report"
+    "key-contacts","action-tracker","breach-register","scenario-sim"
   ].includes(view);
 }
 
@@ -1034,14 +1033,12 @@ export default function App() {
               ["instructions","instructions","How to Use"],
               ["dashboard","dashboard","Dashboard"],
               ["compliance-report","complianceReport","Compliance Report"],
-            ].map(([v,icon,label])=>{
-              const isLocked = v === "compliance-report" && !toolsUnlocked;
-              return (
-              <button key={v} className={`ni ${view===v?"on":""}`} onClick={()=>nav(v)} title={isLocked ? "Complete all 8 phases to unlock tools" : label} style={{opacity:isLocked ? 0.55 : 1,cursor:isLocked ? "not-allowed" : "pointer"}}>
+            ].map(([v,icon,label])=>(
+              <button key={v} className={`ni ${view===v?"on":""}`} onClick={()=>nav(v)} title={label}>
                 <span className="ni-num"><Icon name={icon} size={14} /></span>
                 <span className="ni-name">{label}</span>
               </button>
-            )})}
+            ))}
 
             {/* ── ACCORDION: Phases ── */}
             <AccordionPhases
